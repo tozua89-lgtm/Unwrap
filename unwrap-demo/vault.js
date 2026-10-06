@@ -522,13 +522,22 @@ function acceptCashOfferFromVault() {
   if(vaultCoTimer) clearInterval(vaultCoTimer);
   document.getElementById('cashOfferModal').classList.remove('open');
   const card = vaultCards.find(c => String(c.id) === String(currentCashOfferCardId));
+  if(!card) return;
   const offer = card.price * 0.85;
   window.unwrapWallet += offer;
   if(typeof updateWalletUI === 'function') updateWalletUI();
-  vaultCards = vaultCards.filter(c => c.id !== currentCashOfferCardId);
+  
+  vaultCards = vaultCards.filter(c => String(c.id) !== String(currentCashOfferCardId));
+  
+  try {
+    let pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    pulled = pulled.filter(c => String(c.id) !== String(currentCashOfferCardId));
+    localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
+  } catch(e) {}
+  
   filterCards();
   document.getElementById('statCards').textContent = vaultCards.length;
-  showNotif('✅ Cash Offer Accettata!', `€${offer.toFixed(2)} accreditati nel Wallet.`, 'success');
+  showNotif('? Cash Offer Accettata!', '�' + offer.toFixed(2) + ' accreditati nel Wallet.', 'success');
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -538,6 +547,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderCards(vaultCards);
   document.getElementById('statCards').textContent = vaultCards.length;
 });
+
+
 
 
 
