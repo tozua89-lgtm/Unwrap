@@ -2874,3 +2874,25 @@ img { max-width: 100%; }
   min-height: auto !important;
   height: auto !important;
 }
+
+@media (max-width: 768px) {
+  /* Fix layout per il titolo e info UV su mobile */
+  div#liveSection .live-main > div[style*="margin-top"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  #streamTitle {
+    font-size: 1.1rem !important;
+  }
+  
+  .uv-toggle {
+    font-size: 0.8rem !important;
+  }
+
+  /* Padding per non far toccare i bordi */
+  .live-layout {
+    padding: 10px !important;
+  }
+}
