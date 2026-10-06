@@ -107,17 +107,20 @@ async function openPack() {
   const col = rarityColors[highlight.rarity];
 
   resultCard.innerHTML = `
-    <div style="height:250px;background:${highlight.bg};border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;position:relative;padding:1rem;display:flex;justify-content:center">
-      <img src="${highlight.img}" style="height:100%;object-fit:contain" onerror="this.style.display='none'" />
-      <div style="position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.8);border:1px solid ${col};color:${col};font-size:0.65rem;font-weight:800">${rarityLabels[highlight.rarity]}</div>
+    <!-- Immagine carta: altezza adattiva al viewport -->
+    <div style="height:clamp(160px,30vw,240px);background:${highlight.bg};border-radius:var(--radius);overflow:hidden;margin-bottom:0.75rem;position:relative;padding:0.75rem;display:flex;justify-content:center;align-items:center">
+      <img src="${highlight.img}" style="max-height:100%;max-width:100%;object-fit:contain" onerror="this.style.display='none'" />
+      <div style="position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.85);border:1px solid ${col};color:${col};font-size:0.65rem;font-weight:800">${rarityLabels[highlight.rarity]}</div>
     </div>
-    <div class="result-name">${highlight.name}</div>
-    <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem">${highlight.game}</div>
-    <div class="result-value" style="margin-bottom:0.75rem">Valore mercato stimato: <strong>€${highlight.price.toFixed(2)}</strong></div>
-    <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1rem">Aggiunta al Vault con Proof of Pull 4K notarizzata in blockchain.<br><em>Le carte comuni sono state aggiunte alla sezione Bulk del Vault.</em></div>
-    <div style="display:flex;gap:0.5rem">
-      <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.8rem;padding:6px" onclick='openProofVideo(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>▶ Guarda Proof Video</button>
-      <button class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.8rem;padding:6px;border-color:var(--gold);color:var(--gold)" onclick='instantSellLive(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>⚡ Vendi a Unwrap (€${(highlight.price * 0.85).toFixed(2)})</button>
+    <!-- Info carta -->
+    <div class="result-name" style="font-size:clamp(1rem,4vw,1.3rem)">${highlight.name}</div>
+    <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.3rem">${highlight.game}</div>
+    <div class="result-value" style="margin-bottom:0.5rem;font-size:clamp(0.9rem,3.5vw,1.1rem)">Valore: <strong style="color:var(--green)">€${highlight.price.toFixed(2)}</strong></div>
+    <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.4">Aggiunta al Vault con Proof of Pull 4K notarizzata.<br><em>Le carte comuni sono state aggiunte al Bulk.</em></div>
+    <!-- Bottoni sempre visibili -->
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px" onclick='openProofVideo(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>▶ Proof Video</button>
+      <button class="btn btn-outline" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px;border-color:var(--gold);color:var(--gold)" onclick='instantSellLive(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>⚡ Vendi (€${(highlight.price * 0.85).toFixed(2)})</button>
     </div>
   `;
 

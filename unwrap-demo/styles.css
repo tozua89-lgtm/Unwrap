@@ -2666,3 +2666,101 @@ img { max-width: 100%; }
     padding: 7px 4px !important;
   }
 }
+
+/* ================================================================
+   LIVE OPENING — Layout Mobile Definitivo
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* Layout: stack verticale */
+  .live-layout {
+    grid-template-columns: 1fr !important;
+    padding: 1rem 0 !important;
+  }
+
+  /* live-stream: niente aspect-ratio rigido, occupa spazio necessario */
+  .live-stream {
+    aspect-ratio: unset !important;
+    min-height: unset !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border-radius: var(--radius) !important;
+  }
+
+  /* stream-overlay: non assoluto, normale flow */
+  .stream-overlay {
+    position: relative !important;
+    inset: unset !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.5rem !important;
+  }
+
+  /* Pack visual box: compatto */
+  #packVisual {
+    width: 120px !important;
+    height: 150px !important;
+    min-height: unset !important;
+    font-size: 3rem !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(135deg, #1e3a5f, #7c3aed) !important;
+  }
+
+  /* Bottone sbustamento: full-width ben visibile */
+  #openBtn {
+    width: 92% !important;
+    max-width: 380px !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    padding: 14px !important;
+    border-radius: var(--radius) !important;
+  }
+
+  /* open-result: centrato e compatto */
+  .open-result {
+    margin-top: 0.75rem !important;
+    width: 100% !important;
+  }
+
+  /* result-card: ridotto padding e testi */
+  .result-card {
+    padding: 1rem !important;
+  }
+  .result-name {
+    font-size: clamp(1rem, 4vw, 1.3rem) !important;
+    margin-bottom: 0.25rem !important;
+  }
+  .result-value {
+    font-size: clamp(0.9rem, 3.5vw, 1rem) !important;
+  }
+
+  /* Intestazione stream (Titolo + UV) */
+  div#liveSection > .container > .live-layout > .live-main > div[style*="margin-top"] {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  /* live-badge: posizione relativa invece di absolute */
+  .live-badge {
+    position: relative !important;
+    top: unset !important;
+    left: unset !important;
+    align-self: flex-start !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Pull Log / sidebar: dopo il main */
+  .live-sidebar {
+    margin-top: 1rem !important;
+    width: 100% !important;
+  }
+  .pull-log {
+    max-height: 280px !important;
+    overflow-y: auto !important;
+  }
+}
