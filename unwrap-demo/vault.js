@@ -17,7 +17,13 @@ function syncGrading() {
       }
     });
   } catch(e) {}
+  
   vaultCards = [...CARD_DB.filter(c => c.owner === 'me')];
+  
+  try {
+    const pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    vaultCards = [...pulled, ...vaultCards];
+  } catch(e) {}
 }
 
 function syncBulk() {

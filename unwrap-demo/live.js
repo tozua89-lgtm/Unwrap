@@ -125,16 +125,33 @@ async function openPack() {
   `;
 
   openResult.style.display = 'block';
+  document.querySelector('.live-stream').classList.add('has-result');
   setTimeout(() => openResult.classList.add('visible'), 50);
 
   currentPulls = [highlight, ...currentPulls];
   renderPullLog(currentPulls.slice(0, 14));
+
+  // ── Salva nel Vault locale ──
+  try {
+    let pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    let newCard = JSON.parse(JSON.stringify(highlight));
+    newCard.id = 'pull_' + Date.now();
+    newCard.isFresh = true; // per attivare Cash Offer
+    newCard.owner = 'me';
+    newCard.isListed = false;
+    pulled.unshift(newCard);
+    localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
+    
+    // Aggiorniamo l'oggetto highlight corrente per passarlo alle altre funzioni (come instantSellLive)
+    highlight.id = newCard.id;
+  } catch(e) {}
 
   if(highlight.price > 20) {
     setTimeout(() => triggerCashOffer(highlight), 800);
   }
 
   setTimeout(() => {
+    document.querySelector('.live-stream').classList.remove('has-result');
     packVisual.innerHTML = '📦';
     packVisual.style.fontSize = '2rem';
     packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
@@ -152,20 +169,31 @@ function instantSellLive(cardObj) {
   window.unwrapWallet += parseFloat(offer);
   if(typeof updateWalletUI === 'function') updateWalletUI();
   
-  // Rimuovi dal log e nascondi widget
+  // Rimuovi dal log
   currentPulls = currentPulls.filter(c => c.id !== cardObj.id);
   renderPullLog(currentPulls.slice(0, 14));
+  
+  // Rimuovi dal Vault locale (se era appena stata aggiunta)
+  try {
+    let pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    const idx = pulled.findIndex(c => c.id === cardObj.id);
+    if (idx !== -1) pulled.splice(idx, 1);
+    localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
+  } catch(e) {}
   
   const cashWidget = document.getElementById('cashOfferWidget');
   if (cashWidget) cashWidget.style.display = 'none';
   
   document.getElementById('openResult').style.display = 'none';
+  document.querySelector('.live-stream').classList.remove('has-result');
   
   showNotif('✅ Rivendita Istantanea', `Hai venduto la carta per €${offer.toFixed(2)}. Il saldo è stato aggiornato.`, 'success');
 }
 
 // ─── CASH OFFER ───────────────────────────────
 let cashOfferTimer = null;
+let currentCashOfferCardId = null;
+
 function triggerCashOffer(card) {
   const offer = Math.round(card.price * 0.85); 
   const widget = document.getElementById('cashOfferWidget');
@@ -173,6 +201,7 @@ function triggerCashOffer(card) {
   if (cashOfferTimer) clearInterval(cashOfferTimer);
   document.getElementById('cashOfferCard').innerHTML = `<span style="font-weight:700">${card.name}</span>`;
   document.getElementById('cashOfferAmount').textContent = `€${offer}`;
+  currentCashOfferCardId = card.id;
   widget.style.display = 'block';
 
   let secs = 172800;
@@ -192,6 +221,17 @@ function acceptCashOffer() {
   document.getElementById('cashOfferWidget').style.display = 'none';
   window.unwrapWallet += parseInt(document.getElementById('cashOfferAmount').textContent.replace('€',''));
   updateWalletUI();
+  
+  // Rimuovi dal Vault locale
+  if (currentCashOfferCardId) {
+    try {
+      let pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+      const idx = pulled.findIndex(c => c.id === currentCashOfferCardId);
+      if (idx !== -1) pulled.splice(idx, 1);
+      localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
+    } catch(e) {}
+  }
+  
   showNotif('✅ Cash Offer Accettata!', 'Il credito è stato aggiunto al tuo Wallet istantaneamente.', 'success');
 }
 

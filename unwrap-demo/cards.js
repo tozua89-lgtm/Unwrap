@@ -69,6 +69,56 @@ const CARD_DB = [
     price: 95.00, proof: true, isFresh: false, isListed: false, grade: null,
     img: 'https://images.pokemontcg.io/pgo/71_hires.png', bg: '#0d0d1a'
   },
+  
+  /* --- NUOVE CARTE DA TROVARE NEI PACCHETTI (Non nel vault di default) --- */
+  {
+    id: 9, owner: 'db', game: 'Pokémon TCG',
+    name: 'Gengar VMAX (Alt Art)', set: 'Fusion Strike', rarity: 'secret',
+    price: 240.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh8/271_hires.png', bg: '#1a0a1a'
+  },
+  {
+    id: 10, owner: 'db', game: 'Pokémon TCG',
+    name: 'Giratina V (Alt Art)', set: 'Lost Origin', rarity: 'secret',
+    price: 310.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh11/186_hires.png', bg: '#0a1a10'
+  },
+  {
+    id: 11, owner: 'db', game: 'Pokémon TCG',
+    name: 'Machamp V (Alt Art)', set: 'Astral Radiance', rarity: 'secret',
+    price: 130.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh10/172_hires.png', bg: '#1a1005'
+  },
+  {
+    id: 12, owner: 'db', game: 'Pokémon TCG',
+    name: 'Blaziken VMAX (Alt Art)', set: 'Chilling Reign', rarity: 'secret',
+    price: 185.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh6/201_hires.png', bg: '#1a0505'
+  },
+  {
+    id: 13, owner: 'db', game: 'Pokémon TCG',
+    name: 'Glaceon VMAX (Alt Art)', set: 'Evolving Skies', rarity: 'secret',
+    price: 195.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh7/209_hires.png', bg: '#051a1a'
+  },
+  {
+    id: 14, owner: 'db', game: 'Pokémon TCG',
+    name: 'Leafeon VMAX (Alt Art)', set: 'Evolving Skies', rarity: 'secret',
+    price: 175.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh7/205_hires.png', bg: '#0a1a05'
+  },
+  {
+    id: 15, owner: 'db', game: 'Pokémon TCG',
+    name: 'Aerodactyl V (Alt Art)', set: 'Lost Origin', rarity: 'secret',
+    price: 115.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh11/180_hires.png', bg: '#101010'
+  },
+  {
+    id: 16, owner: 'db', game: 'Pokémon TCG',
+    name: 'Tyranitar V (Alt Art)', set: 'Battle Styles', rarity: 'secret',
+    price: 140.00, proof: true, isFresh: true, isListed: false, grade: null,
+    img: 'https://images.pokemontcg.io/swsh5/155_hires.png', bg: '#0a0a05'
+  },
 
   /* ═══════ ONE PIECE TCG ═══════
      Nota: non esiste un CDN pubblico ufficiale. Usiamo carte

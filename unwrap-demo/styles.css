@@ -2764,3 +2764,13 @@ img { max-width: 100%; }
     overflow-y: auto !important;
   }
 }
+
+/* ================================================================
+   LIVE OPENING MOBILE - FIX PACK VISUAL
+   ================================================================ */
+@media (max-width: 768px) {
+  /* Nascondi il pacco se c'è un risultato visibile (usa la classe .has-result sul contenitore live-stream) */
+  .live-stream.has-result #packVisual {
+    display: none !important;
+  }
+}
