@@ -1283,9 +1283,9 @@ img { max-width: 100%; }
 .live-stream {
   background: #000;
   border-radius: var(--radius);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
-  aspect-ratio: 16/9;
+  
 }
 
 .stream-overlay {
@@ -2945,5 +2945,177 @@ img { max-width: 100%; }
     overflow-y: auto !important;
     width: 95% !important;
     margin: 4vh auto !important;
+  }
+}
+
+
+/* ================================================================
+   LIVE OPENING - OVERRIDE DEFINITIVO (priorità massima)
+   Risolve tagli su desktop e mobile
+   ================================================================ */
+.live-stream,
+.live-stream.has-result {
+  aspect-ratio: unset !important;
+  min-height: unset !important;
+  height: auto !important;
+  overflow: visible !important;
+  display: block !important;
+  background: #000 !important;
+  border-radius: var(--radius) !important;
+  padding: 16px !important;
+}
+
+.stream-overlay {
+  position: relative !important;
+  inset: unset !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Nascondi packVisual quando c'è un risultato */
+.live-stream.has-result #packVisual { display: none !important; }
+.live-stream.has-result .pack-interaction { display: none !important; }
+
+/* Pacchetto di default */
+.pack-visual, #packVisual {
+  width: 120px !important;
+  height: 150px !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  aspect-ratio: unset !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+}
+
+/* Result: NON troncare */
+.open-result {
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+.result-card {
+  position: relative !important;
+  max-width: 440px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+/* Immagine carta risultato: occupa il suo spazio naturale */
+.result-card .card-img-container {
+  aspect-ratio: 5 / 7 !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 12px !important;
+}
+
+.result-card .card-img-container img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* ================================================================
+   LIVE OPENING - MOBILE
+   ================================================================ */
+@media (max-width: 768px) {
+  .live-main {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+  }
+  
+  /* Barra titolo/UV in colonna */
+  #liveSection div[style*="justify-content:space-between"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+  
+  #streamTitle {
+    font-size: 1rem !important;
+    margin: 0 !important;
+  }
+  
+  .uv-toggle { font-size: 0.75rem !important; }
+  
+  .result-card { max-width: 100% !important; }
+  
+  /* Pull log compatto */
+  #pullLog {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ================================================================
+   SWAP VAULT GRID - Override definitivo per anteprime intere
+   ================================================================ */
+#swapVaultGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 10px !important;
+  max-height: 55vh !important;
+  overflow-y: auto !important;
+  padding: 4px !important;
+}
+
+#swapVaultGrid .card-item {
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  border: 2px solid transparent !important;
+  transition: border-color 0.2s, transform 0.15s !important;
+}
+
+#swapVaultGrid .card-item:hover,
+#swapVaultGrid .card-item.selected {
+  border-color: var(--accent) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Il div immagine dentro ogni card-item */
+#swapVaultGrid .card-item > div:first-child {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 5 / 7 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
+}
+
+#swapVaultGrid .card-item > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* card-img-container nel result ha position:relative per il badge rarity */
+.result-card .card-img-container {
+  position: relative !important;
+}
+
+/* Swap modal: su desktop usa 3 colonne, su mobile 2 */
+@media (min-width: 769px) {
+  #swapVaultGrid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-height: 380px !important;
   }
 }

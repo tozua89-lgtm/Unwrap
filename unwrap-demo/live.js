@@ -142,8 +142,8 @@ async function openPack() {
 
   resultCard.innerHTML =
     '<button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.4rem;cursor:pointer;z-index:20;display:flex;align-items:center;justify-content:center;line-height:1" onclick="closeOpenResult()">×</button>' +
-    '<div style="height:clamp(160px,35vw,250px);background:' + highlight.bg + ';border-radius:var(--radius);overflow:hidden;margin:12px 0 0.75rem;position:relative;padding:0.5rem;display:flex;justify-content:center;align-items:center">' +
-      '<img src="' + highlight.img + '" style="height:100%;width:100%;object-fit:contain" onerror="this.style.display=\'none\'" />' +
+    '<div class="card-img-container" style="background:' + highlight.bg + '">' +
+      '<img src="' + highlight.img + '" onerror="this.style.display=\'none\'" />' +
       '<div style="position:absolute;bottom:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.85);border:1px solid ' + col + ';color:' + col + ';font-size:0.65rem;font-weight:800">' + rarityLabels[highlight.rarity] + '</div>' +
     '</div>' +
     '<div class="result-name" style="font-size:clamp(1rem,4vw,1.3rem)">' + highlight.name + '</div>' +
@@ -264,3 +264,4 @@ window.addEventListener('DOMContentLoaded', function() {
   if (urlParams.get('game')) currentGame = urlParams.get('game');
   if (urlParams.get('packReady') === 'true') startLiveSession();
 });
+
