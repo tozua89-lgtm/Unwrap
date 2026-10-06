@@ -2302,3 +2302,56 @@ img { max-width: 100%; }
 @media (max-width: 768px) {
   .grid-3 { grid-template-columns: 1fr !important; }
 }
+
+/* =============================================
+   ULTIMATE MOBILE NAV FIX
+   ============================================= */
+@media (max-width: 768px) {
+  .nav {
+    height: auto !important;
+    padding: 10px 0 !important;
+  }
+  .nav-inner {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: 5px 15px !important;
+    gap: 10px !important;
+    justify-content: space-between !important;
+  }
+  .logo {
+    font-size: 1.4rem !important;
+  }
+  .nav-actions {
+    margin: 0 !important;
+  }
+  .wallet-badge {
+    padding: 6px 10px !important;
+    font-size: 0.85rem !important;
+  }
+  .nav-links {
+    order: 3 !important;
+    width: 100% !important;
+    margin: 10px 0 0 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    overflow: visible !important;
+  }
+  .nav-links li {
+    margin: 0 !important;
+  }
+  .nav-links a {
+    font-size: 0.75rem !important;
+    padding: 6px 10px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    border: none !important;
+    white-space: nowrap !important;
+  }
+  .nav-links a.active {
+    background: rgba(124,58,237,0.3) !important;
+    color: white !important;
+  }
+}
