@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Opening — Unwrap</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">unwrap<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vault.html">Vault</a></li>
+      <li><a href="live.html" class="active">Live Opening</a></li>
+      <li><a href="marketplace.html">Marketplace</a></li>
+      <li><a href="grading.html">Grading</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="wallet-badge" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700;margin-right:10px">
+        💳 <span class="wallet-amount">€540.00</span>
+      </div>
+      <button class="btn btn-primary" onclick="showBookingModal('Prossimo Slot')">📅 Prenota Sessione</button>
+    </div>
+  </div>
+</nav>
+
+<!-- CALENDARIO PRENOTAZIONI -->
+<div class="container" style="padding-top:4rem; margin-bottom:2rem" id="bookingSection">
+  <div class="section-tag" style="justify-content:center">Step 1</div>
+  <h2 style="text-align:center;margin-bottom:2rem">Programma le tue Aperture</h2>
+  <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:2rem; text-align:center;">
+    <p style="color:var(--text-secondary); margin-bottom:1.5rem">Hai <strong style="color:#fff">2 Prodotti Sigillati</strong> nel tuo Vault pronti per essere sbustati.</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap">
+      <div style="background:rgba(124,58,237,0.1); border:1px solid var(--accent); padding:1rem; border-radius:8px; width:200px">
+        <div style="font-size:2rem; margin-bottom:0.5rem">📅</div>
+        <div style="font-weight:700">Oggi - 18:30</div>
+        <div style="font-size:0.8rem; color:var(--text-muted)">Slot Libero</div>
+        <button class="btn btn-primary" style="margin-top:1rem; width:100%; justify-content:center" onclick="confirmBooking()">Prenota</button>
+      </div>
+      <div style="background:rgba(16,185,129,0.1); border:1px solid var(--green); padding:1rem; border-radius:8px; width:200px">
+        <div style="font-size:2rem; margin-bottom:0.5rem">🎥</div>
+        <div style="font-weight:700">La tua Sessione</div>
+        <div style="font-size:0.8rem; color:var(--green)">PRONTA ORA</div>
+        <button class="btn" style="margin-top:1rem; width:100%; justify-content:center; background:var(--green); color:#000" onclick="startLiveSession()">▶ ENTRA IN LIVE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIVE STREAM AREA (Nascosta inizialmente) -->
+<div class="container" style="padding-bottom:4rem; display:none" id="liveSection">
+  
+  <div class="live-layout">
+    <div class="live-main">
+      <div class="live-stream">
+        <div class="live-badge">🔴 LIVE 1:1</div>
+        <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+        
+        <div class="pack-interaction">
+          <div class="pack-visual" id="packVisual">📦</div>
+          <button class="btn btn-primary btn-pulse" id="openBtn" onclick="openPack()" style="padding:15px 30px;font-size:1.1rem">
+            ▶ Inizia Sbustamento
+          </button>
+        </div>
+
+        <div class="open-result" id="openResult">
+          <div class="result-card" id="resultCard"></div>
+        </div>
+
+        <!-- CASH OFFER WIDGET (Appare istantaneamente sul pull) -->
+        <div class="cash-offer-widget" id="cashOfferWidget">
+          <div class="cash-offer-header">
+            ⚡ CASH OFFER IMMEDIATA
+          </div>
+          <div class="cash-offer-body">
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-bottom:5px">Offerta per:</div>
+            <div id="cashOfferCard" style="font-weight:700;font-size:1.1rem;margin-bottom:10px">Charizard ex</div>
+            <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:15px">
+              <div id="cashOfferAmount" style="font-size:2.5rem;font-weight:900;color:var(--gold);line-height:1">€120</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:5px">Accredito istantaneo</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="acceptCashOffer()">Accetta</button>
+              <button class="btn btn-outline" style="flex:1;justify-content:center" onclick="declineCashOffer()">Tieni nel Vault</button>
+            </div>
+            <div style="text-align:center;margin-top:10px;font-size:0.75rem;color:rgba(255,255,255,0.5)">
+              Scade in: <span id="cashOfferTimer" style="font-family:monospace;color:var(--gold)">48:00:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top:1rem;display:flex;justify-content:space-between;align-items:center">
+        <h2 id="streamTitle" style="font-size:1.2rem">Sbustamento Pacchetto Evolving Skies</h2>
+        <div style="display:flex;gap:10px">
+          <div class="uv-toggle"><span style="color:#a855f7">●</span> Verifica UV: Attiva</div>
+          <div class="uv-toggle"><span style="color:var(--green)">●</span> Peso: 18.34g</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR PULL LOG -->
+    <div class="live-sidebar">
+      <div class="sidebar-header">
+        <h3 style="font-size:1rem;margin:0">Pull Log (Proof 4K)</h3>
+        <span style="font-size:0.7rem;background:rgba(16,185,129,0.2);color:var(--green);padding:2px 6px;border-radius:4px">Hash Salvato</span>
+      </div>
+      <div class="pull-log" id="pullLog">
+        <!-- Generato da JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notification" id="notification">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-text" id="notifText"></div>
+</div>
+
+<script src="app.js"></script>
+<script src="cards.js"></script>
+<script src="proof-video.js"></script>
+<script src="live.js"></script>
+</body>
+</html>

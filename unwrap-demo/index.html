@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unwrap — Il Futuro del TCG</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">unwrap<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="vault.html">Vault</a></li>
+      <li><a href="live.html">Live Opening</a></li>
+      <li><a href="marketplace.html">Marketplace</a></li>
+      <li><a href="grading.html">Grading</a></li>
+    </ul>
+    <div class="nav-actions">
+      <!-- NUOVO WALLET -->
+      <div class="wallet-badge" onclick="showNotif('Wallet Unwrap','Aggiungi fondi o ritira il tuo saldo.','')" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700">
+        💳 <span id="navWallet">€540.00</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Web3 TCG Platform</div>
+    <h1 class="hero-title">Sbusta, Certifica, Scambia.<br><span class="gradient-text">Tutto in un istante.</span></h1>
+    <p class="hero-subtitle">Acquista box sigillati, sbustali in diretta 1:1, ottieni il Proof of Pull in blockchain e decidi: tieni nel Vault, grada con l'AI o rivendi all'istante.</p>
+    <div class="hero-buttons">
+      <a href="marketplace.html" class="btn btn-primary" style="font-size:1.1rem;padding:15px 30px">Acquista e Sbusta</a>
+      <a href="vault.html" class="btn btn-outline" style="font-size:1.1rem;padding:15px 30px">Esplora il Vault</a>
+    </div>
+  </div>
+  
+  <div class="hero-cards">
+    <div class="floating-card" style="animation-delay: 0s;">
+      <img src="https://images.pokemontcg.io/swsh7/215_hires.png" alt="Umbreon" onerror="this.style.display='none'">
+    </div>
+    <div class="floating-card" style="animation-delay: -2s; margin-top: 40px;">
+      <!-- One Piece Manga Rare Placeholder -->
+      <img src="https://limitlesstcg.s3.us-east-2.amazonaws.com/one-piece/op05/op05-119-sr-p.png" alt="Luffy" onerror="this.style.display='none'">
+    </div>
+    <div class="floating-card" style="animation-delay: -4s;">
+      <img src="https://images.pokemontcg.io/base1/4_hires.png" alt="Charizard" onerror="this.style.display='none'">
+    </div>
+  </div>
+</header>
+
+<section class="container" style="padding: 4rem 1rem;">
+  <div style="text-align:center;margin-bottom:3rem">
+    <h2 style="font-size:2.5rem;font-weight:900">Il primo ecosistema "Zero Waste"</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem">
+    <div style="background:var(--bg-secondary);padding:2rem;border-radius:12px;border:1px solid var(--border)">
+      <div style="font-size:3rem;margin-bottom:1rem">📹</div>
+      <h3 style="font-size:1.5rem;margin-bottom:1rem">Proof of Pull 4K</h3>
+      <p style="color:var(--text-secondary)">Ogni carta rara viene certificata con il video del suo sbustamento, legato per sempre alla carta tramite QR code nella nostra Slab. Impossibile falsificare.</p>
+    </div>
+    <div style="background:var(--bg-secondary);padding:2rem;border-radius:12px;border:1px solid var(--border)">
+      <div style="font-size:3rem;margin-bottom:1rem">⚖️</div>
+      <h3 style="font-size:1.5rem;margin-bottom:1rem">AI Grading & PSA/BGS</h3>
+      <p style="color:var(--text-secondary)">Scegli l'algoritmo Unwrap AI per un grading istantaneo (20€) con Slab premium, o affidati al routing tradizionale verso PSA o BGS direttamente dal tuo Vault.</p>
+    </div>
+    <div style="background:var(--bg-secondary);padding:2rem;border-radius:12px;border:1px solid var(--border);border-left:4px solid var(--green)">
+      <div style="font-size:3rem;margin-bottom:1rem">💚</div>
+      <h3 style="font-size:1.5rem;margin-bottom:1rem">Programma Bulk & Charity</h3>
+      <p style="color:var(--text-secondary)">Cosa fai con le carte comuni? Nel nostro Vault puoi <strong>convertirle in Bulk Points</strong> per sconti, <strong>venderle al grammo</strong> per ottenere credito sul Wallet, oppure <strong>donarle in beneficenza</strong> a progetti per l'infanzia e ospedali.</p>
+    </div>
+  </div>
+</section>
+
+<div class="notification" id="notification">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-text" id="notifText"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vault — Unwrap</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">unwrap<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vault.html" class="active">Vault</a></li>
+      <li><a href="live.html">Live Opening</a></li>
+      <li><a href="marketplace.html">Marketplace</a></li>
+      <li><a href="grading.html">Grading</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="wallet-badge" onclick="openWalletModal()" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700">
+        💳 <span class="wallet-amount">€540.00</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <div class="section-tag">Caveau Notarile</div>
+    <h1>Il tuo Vault</h1>
+    <p>Solo le carte con Proof of Pull verificata sono custodite nel caveau fisico.</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="vault-layout">
+    <aside class="vault-sidebar">
+      <div class="vault-profile">
+        <div class="avatar">🎴</div>
+        <h3>Marco R.</h3>
+        <p>Membro dal Genn. 2026</p>
+      </div>
+      <div class="vault-stats-panel">
+        <div class="vs-title">Asset nel Vault</div>
+        <div class="vs-row"><span>Carte Rare/Singole</span><span id="statCards">10</span></div>
+        <div class="vs-row"><span>Materiale Bulk</span><span id="statBulk">415</span></div>
+        <div class="vs-row"><span>Peso Bulk Stimato</span><span id="statBulkWeight">747 g</span></div>
+        <div class="vs-row"><span>Valore Stimato</span><span style="color:var(--green)">€3.240</span></div>
+      </div>
+    </aside>
+
+    <main class="vault-main">
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0">
+        <button class="filter-tab active" id="tab-cards" onclick="setVaultTab('cards')">🃏 Le mie Carte</button>
+        <button class="filter-tab" id="tab-bulk" onclick="setVaultTab('bulk')">📦 Materiale Bulk</button>
+        <button class="filter-tab" id="tab-offers" onclick="setVaultTab('offers')">🔔 Offerte Ricevute <span style="background:var(--green);color:#000;border-radius:50%;padding:2px 6px;font-size:0.6rem;margin-left:4px">2</span></button>
+        <button class="filter-tab" id="tab-swapboard" onclick="setVaultTab('swapboard')">🔄 Bacheca Swap</button>
+      </div>
+
+      <!-- CARDS TAB -->
+      <div id="panel-cards">
+        <div class="vault-toolbar">
+          <input type="text" class="search-input" placeholder="🔍 Cerca carta..." id="searchInput" oninput="filterCards()" />
+          <div class="filter-tabs" id="filterTabs">
+            <button class="filter-tab active" onclick="setFilter('all',this)">Tutte</button>
+            <button class="filter-tab" onclick="setFilter('rare',this)">Rare/Secret</button>
+            <button class="filter-tab" onclick="setFilter('graded',this)">💎 Già Gradate</button>
+          </div>
+        </div>
+        <div class="cards-grid" id="cardsGrid"></div>
+      </div>
+
+      <!-- BULK TAB -->
+      <div id="panel-bulk" style="display:none">
+        <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:2rem; margin-bottom:2rem">
+          <h3 style="font-weight:900; font-size:1.5rem; margin-bottom:0.5rem" id="bulkTitle">Il Tuo Bulk: 415 Carte (747 Grammi) <span style="font-size:1rem;font-weight:400;color:var(--text-muted)">(Valutazione attuale: €0.01 / grammo)</span></h3>
+          <p style="color:var(--text-secondary); margin-bottom:2rem">Comuni e non comuni sbustate durante le Live. Opzioni "Zero Waste" per l'ambiente e la community.</p>
+          
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem">
+            <div style="background:rgba(124,58,237,0.1);border:1px solid var(--accent);border-radius:8px;padding:1.5rem;text-align:center">
+              <div style="font-size:2rem;margin-bottom:10px">🎁</div>
+              <h4 style="margin-bottom:10px">Converti in Bulk Points</h4>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Ottieni punti per sconti su spedizioni e grading AI.</p>
+              <button class="btn btn-outline" style="width:100%;justify-content:center;color:var(--accent-light);border-color:var(--accent)" onclick="showNotif('Convertite!','Hai ricevuto punti bulk.','success')">Converti</button>
+            </div>
+            
+            <div style="background:rgba(16,185,129,0.1);border:1px solid var(--green);border-radius:8px;padding:1.5rem;text-align:center">
+              <div style="font-size:2rem;margin-bottom:10px">⚖️</div>
+              <h4 style="margin-bottom:10px">Vendi al Grammo</h4>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Vendi a Unwrap. Valore: <strong>€4.15</strong></p>
+              <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="sellBulk()">Vendi Bulk</button>
+            </div>
+            
+            <div style="background:rgba(239,68,68,0.1);border:1px solid #ef4444;border-radius:8px;padding:1.5rem;text-align:center">
+              <div style="font-size:2rem;margin-bottom:10px">🧸</div>
+              <h4 style="margin-bottom:10px">Dona in Beneficenza</h4>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Invia ai progetti pediatrici (Charity Unwrap).</p>
+              <button class="btn" style="width:100%;justify-content:center;background:#ef4444;color:#fff" onclick="showNotif('Donazione Inviata!','Grazie! Le tue carte faranno felice un bambino.','success')">Dona Ora</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFFERS TAB -->
+      <div id="panel-offers" style="display:none">
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:2rem">
+          <h3 style="font-weight:800;font-size:1.1rem;margin-bottom:1.5rem">Proposte d'acquisto in sospeso</h3>
+          <div id="offersList"></div>
+        </div>
+      </div>
+      
+      <!-- SWAP BOARD TAB -->
+      <div id="panel-swapboard" style="display:none">
+        <div style="background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(16,185,129,0.05));border:1px solid var(--accent);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;margin-bottom:2rem">
+          <h3 style="font-weight:800;font-size:1.1rem;margin-bottom:0.5rem">Bacheca Swap Diretta</h3>
+          <p style="color:var(--text-secondary);font-size:0.85rem">Offerte di scambio 1:1 globali.</p>
+        </div>
+        <div class="cards-grid" id="swapBoardGrid"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- CARD DETAIL (DYNAMIC SLAB INCL) -->
+<div class="modal-overlay" id="cardDetailModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3 id="cardDetailTitle">Dettaglio Carta</h3>
+      <button class="modal-close" onclick="document.getElementById('cardDetailModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="cardDetailBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sellModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h3>💰 Metti in Vendita sul Marketplace</h3>
+      <button class="modal-close" onclick="document.getElementById('sellModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="sellModalBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cashOfferModal">
+  <div class="modal" style="max-width:450px;text-align:center;background:linear-gradient(135deg, #0f0f1a, #2a104f);border:2px solid var(--gold);">
+    <div style="font-size:3rem;margin-bottom:1rem;color:var(--gold)">⚡</div>
+    <h2 style="font-weight:900;margin-bottom:0.5rem">RIVENDITA ISTANTANEA</h2>
+    <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1.5rem">Hai sbustato questa carta da meno di 48h. Unwrap ti offre di ritirarla immediatamente pagandoti l'<strong>85%</strong> del valore di mercato stimato.</p>
+    
+    <div style="background:rgba(0,0,0,0.5);padding:1rem;border-radius:8px;margin-bottom:1.5rem">
+      <div id="coCardName" style="font-weight:700;font-size:1.1rem;margin-bottom:5px">Carta</div>
+      <div style="color:var(--text-muted);font-size:0.8rem;text-decoration:line-through;margin-bottom:5px">Valore mercato: €<span id="coMarketVal">0</span></div>
+      <div style="color:var(--gold);font-weight:900;font-size:2rem">€<span id="coOfferVal">0</span></div>
+    </div>
+    
+    <div style="color:#ef4444;font-family:monospace;font-size:1.2rem;font-weight:700;margin-bottom:1.5rem">
+      Scade in: <span id="coTimer">47:59:59</span>
+    </div>
+    
+    <div style="display:flex;gap:1rem">
+      <button class="btn btn-outline" style="flex:1;justify-content:center;color:white;border-color:white" onclick="document.getElementById('cashOfferModal').classList.remove('open')">Annulla</button>
+      <button class="btn btn-gold" style="flex:1;justify-content:center" onclick="acceptCashOfferFromVault()">Accetta Cash</button>
+    </div>
+  </div>
+</div>
+
+<div class="notification" id="notification">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-text" id="notifText"></div>
+</div>
+
+<script src="app.js"></script>
+<script src="cards.js"></script>
+<script src="proof-video.js"></script>
+<script src="vault.js"></script>
+</body>
+</html>

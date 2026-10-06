@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grading — Unwrap</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">unwrap<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vault.html">Vault</a></li>
+      <li><a href="live.html">Live Opening</a></li>
+      <li><a href="marketplace.html">Marketplace</a></li>
+      <li><a href="grading.html" class="active">Grading</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="wallet-badge" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700">
+        💳 <span class="wallet-amount">€540.00</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <div class="section-tag">Unwrap Certified</div>
+    <h1>AI Grading <span class="gradient-text">& Certificazione</span></h1>
+    <p>Gradazione algoritmica dalla Proof of Pull in 4K. Oppure invia le carte a PSA / BGS direttamente dal Vault.</p>
+  </div>
+</div>
+
+<div class="container" style="padding-bottom:4rem">
+  
+  <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:2rem;text-align:center;margin-bottom:3rem">
+    
+    <!-- Step 1: Scelta del servizio -->
+    <div id="stepService">
+      <h2 style="margin-bottom:0.5rem">Scegli il servizio di Gradazione</h2>
+      <p style="color:var(--text-secondary);margin-bottom:2rem">Seleziona il tipo di grading per le carte del tuo Vault.</p>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;text-align:left;max-width:900px;margin:0 auto">
+        
+        <!-- Unwrap AI -->
+        <div style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(16,185,129,0.05));border:2px solid var(--accent);border-radius:12px;padding:1.5rem;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'" onclick="selectService('unwrap')">
+          <div style="font-size:2rem;margin-bottom:10px">🤖</div>
+          <h3 style="font-weight:900;margin-bottom:5px">Unwrap AI Grading</h3>
+          <div style="color:var(--gold);font-weight:800;font-size:1.2rem;margin-bottom:10px">€20.00 <span style="font-size:0.7rem;color:var(--text-muted)">/carta</span></div>
+          <ul style="font-size:0.8rem;color:var(--text-secondary);list-style:none;padding:0;display:flex;flex-direction:column;gap:6px">
+            <li>✓ Risultato istantaneo (< 5 min)</li>
+            <li>✓ Slab digitale premium con QR → Proof of Pull</li>
+            <li>✓ 4 Sub-Voti (CENT, SURF, EDGE, CORN)</li>
+            <li>✓ Hash certificato in blockchain</li>
+          </ul>
+          <div style="text-align:center;margin-top:1rem;font-size:0.7rem;color:var(--accent-light);font-weight:700">CONSIGLIATO</div>
+        </div>
+        
+        <!-- PSA -->
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'" onclick="selectService('psa')">
+          <div style="font-size:2rem;margin-bottom:10px">🏅</div>
+          <h3 style="font-weight:900;margin-bottom:5px">PSA (Routing)</h3>
+          <div style="color:var(--text-muted);font-weight:800;font-size:1.2rem;margin-bottom:10px">da €25.00 <span style="font-size:0.7rem">/carta + sped.</span></div>
+          <ul style="font-size:0.8rem;color:var(--text-secondary);list-style:none;padding:0;display:flex;flex-direction:column;gap:6px">
+            <li>✓ Spedizione diretta dal Vault a PSA</li>
+            <li>✓ Tempi: 30-120 giorni</li>
+            <li>✓ Slab fisica PSA originale</li>
+            <li>✓ Proof of Pull Unwrap allegato</li>
+          </ul>
+        </div>
+        
+        <!-- BGS -->
+        <div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='none'" onclick="selectService('bgs')">
+          <div style="font-size:2rem;margin-bottom:10px">🛡️</div>
+          <h3 style="font-weight:900;margin-bottom:5px">BGS / Beckett (Routing)</h3>
+          <div style="color:var(--text-muted);font-weight:800;font-size:1.2rem;margin-bottom:10px">da €30.00 <span style="font-size:0.7rem">/carta + sped.</span></div>
+          <ul style="font-size:0.8rem;color:var(--text-secondary);list-style:none;padding:0;display:flex;flex-direction:column;gap:6px">
+            <li>✓ Spedizione diretta dal Vault a BGS</li>
+            <li>✓ Tempi: 45-180 giorni</li>
+            <li>✓ Slab fisica BGS con sub-grades</li>
+            <li>✓ Proof of Pull Unwrap allegato</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Step 2: Selezione carta -->
+    <div id="stepSelection" style="display:none">
+      <h2 style="margin-bottom:0.5rem" id="selectionTitle">Seleziona carta dal Vault</h2>
+      <p style="color:var(--text-secondary);margin-bottom:2rem" id="selectionSubtitle">Scegli una carta non ancora gradata.</p>
+      <div id="vaultSelectGrid" class="cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:1rem;margin-bottom:2rem;text-align:left"></div>
+      <button class="btn btn-outline" onclick="resetGrading()" style="margin-top:1rem">← Torna alla scelta servizio</button>
+    </div>
+
+    <!-- Step 3: Progresso Grading (solo Unwrap AI) -->
+    <div id="gradingProgress" style="display:none; max-width:600px; margin:0 auto; text-align:left">
+      <h3 style="text-align:center;margin-bottom:2rem;color:var(--accent-light)">Analisi Ottica AI In Corso...</h3>
+      <div id="progressSteps" style="font-family:monospace;font-size:0.9rem;display:flex;flex-direction:column;gap:12px"></div>
+    </div>
+
+    <!-- Step 4: Risultato Premium Slab -->
+    <div id="gradingResult" style="display:none; text-align:center">
+      <h3 style="color:var(--gold);font-weight:900;font-size:2rem;margin-bottom:0.5rem">Grading Completato</h3>
+      <p style="color:var(--text-secondary);margin-bottom:2rem">Il certificato Unwrap è stato associato alla tua carta. La Slab è visibile nel tuo Vault.</p>
+      <div id="premiumSlabContainer" style="margin-bottom:2rem"></div>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="resetGrading()">Gradane un'altra</button>
+        <a href="vault.html" class="btn btn-outline">Vai al Vault</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="notification" id="notification">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-text" id="notifText"></div>
+</div>
+
+<script src="app.js"></script>
+<script src="cards.js"></script>
+<script src="grading.js"></script>
+</body>
+</html>

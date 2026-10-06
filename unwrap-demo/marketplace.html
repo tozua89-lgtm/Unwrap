@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marketplace — Unwrap</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">unwrap<span class="logo-dot">.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vault.html">Vault</a></li>
+      <li><a href="live.html">Live Opening</a></li>
+      <li><a href="marketplace.html" class="active">Marketplace</a></li>
+      <li><a href="grading.html">Grading</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="wallet-badge" onclick="openWalletModal()" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700">
+        💳 <span class="wallet-amount">€540.00</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <div class="section-tag">Marketplace & E-Commerce</div>
+    <h1>Store <span class="gradient-text">Ufficiale</span> & Mercato</h1>
+    <p>Acquista box sigillati dai distributori ufficiali o carte singole certificate dagli utenti. Lo Swap P2P è nella sezione Vault e qui.</p>
+  </div>
+</div>
+
+<div class="container" style="padding-top:2rem;padding-bottom:4rem">
+
+  <div style="display:flex;gap:0.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0">
+    <button class="filter-tab active" id="tab-store" onclick="setMarketTab('store')">📦 Store Ufficiale (Sigillati)</button>
+    <button class="filter-tab" id="tab-singles" onclick="setMarketTab('singles')">🃏 Mercato Utenti (Singole)</button>
+  </div>
+
+  <div id="panel-store">
+    <div class="mp-toolbar">
+      <input type="text" class="search-input" placeholder="🔍 Cerca espansione, TCG..." id="storeSearch" oninput="filterStore()" />
+      <select class="select-filter" id="storeGame" onchange="filterStore()">
+        <option value="">Tutti i Giochi</option>
+        <option>Pokémon TCG</option>
+        <option>One Piece TCG</option>
+        <option>Riftbound</option>
+      </select>
+    </div>
+    <div class="mp-grid" id="storeGrid"></div>
+  </div>
+
+  <div id="panel-singles" style="display:none">
+    <div class="mp-toolbar">
+      <input type="text" class="search-input" placeholder="🔍 Cerca carta o set..." id="mpSearch" oninput="filterMarket()" />
+      <select class="select-filter" id="mpSet" onchange="filterMarket()">
+        <option value="">Tutti i Set</option>
+        <option>Scarlet & Violet</option>
+        <option>Sword & Shield</option>
+        <option>Base Set</option>
+      </select>
+      <select class="select-filter" id="mpListingType" onchange="filterMarket()">
+        <option value="">Tutte le Inserzioni</option>
+        <option value="sale">Solo Vendita</option>
+        <option value="trade">Valuta Scambio</option>
+        <option value="mixed">Scambio + Conguaglio</option>
+      </select>
+      <select class="select-filter" id="mpSort" onchange="filterMarket()">
+        <option>Prezzo: Crescente</option>
+        <option>Prezzo: Decrescente</option>
+      </select>
+    </div>
+    <div class="mp-grid" id="mpGrid"></div>
+  </div>
+
+</div>
+
+<!-- PURCHASE MODAL -->
+<div class="modal-overlay" id="purchaseModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h3 id="purchaseTitle">Acquista</h3>
+      <button class="modal-close" onclick="document.getElementById('purchaseModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="purchaseBody"></div>
+  </div>
+</div>
+
+<!-- SWAP PROPOSAL MODAL -->
+<div class="modal-overlay" id="swapProposalModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <h3>🔄 Proponi Scambio</h3>
+      <button class="modal-close" onclick="document.getElementById('swapProposalModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:1rem">Seleziona una carta dal tuo Vault da offrire in scambio per questa inserzione.</p>
+      <div id="swapTargetInfo" style="background:var(--bg-secondary);padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:1.5rem;display:flex;align-items:center;gap:15px">
+        <!-- Generato via JS -->
+      </div>
+      
+      <h4 style="margin-bottom:10px">Il Tuo Vault</h4>
+      <div id="swapVaultGrid" class="cards-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-height:300px;overflow-y:auto;padding-right:5px">
+        <!-- Generato via JS -->
+      </div>
+      
+      <div id="swapCashInputDiv" style="display:none;margin-top:1.5rem;background:rgba(245,158,11,0.1);padding:1rem;border-radius:8px;border:1px solid var(--gold)">
+        <h4 style="color:var(--gold);margin-top:0;margin-bottom:10px">Integrazione Economica (Scambio + Cash)</h4>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:1.2rem">€</span>
+          <input type="number" class="form-input" id="swapCashAmount" value="0" min="0" style="width:100px;margin-bottom:0">
+          <span style="font-size:0.8rem;color:var(--text-muted)">Verranno prelevati dal Wallet all'accettazione.</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:1.5rem" onclick="confirmSwapProposal()">Invia Proposta di Scambio</button>
+    </div>
+  </div>
+</div>
+
+<div class="notification" id="notification">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-text" id="notifText"></div>
+</div>
+
+<script src="app.js"></script>
+<script src="cards.js"></script>
+<script src="proof-video.js"></script>
+<script src="marketplace.js"></script>
+</body>
+</html>
