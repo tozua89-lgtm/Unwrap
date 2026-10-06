@@ -2896,3 +2896,54 @@ img { max-width: 100%; }
     padding: 10px !important;
   }
 }
+
+/* ================================================================
+   SWAP VAULT GRID - Card preview complete, no crop
+   ================================================================ */
+#swapVaultGrid .card-item {
+  cursor: pointer;
+  transition: border 0.2s, transform 0.15s;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+#swapVaultGrid .card-item:hover {
+  border-color: var(--accent);
+  transform: scale(1.03);
+}
+
+#swapVaultGrid .card-item > div:first-child {
+  aspect-ratio: 5 / 7 !important;
+  height: auto !important;
+  width: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+#swapVaultGrid .card-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 768px) {
+  #swapVaultGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    max-height: 60vh !important;
+  }
+  
+  #swapVaultGrid .card-item > div:first-child {
+    aspect-ratio: 5 / 7 !important;
+  }
+  
+  /* Swap Proposal Modal occupa piu schermo su mobile */
+  #swapProposalModal .modal {
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    width: 95% !important;
+    margin: 4vh auto !important;
+  }
+}
