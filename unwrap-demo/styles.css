@@ -3119,3 +3119,199 @@ img { max-width: 100%; }
     max-height: 380px !important;
   }
 }
+
+/* ================================================================
+   LIVE OPENING MOBILE - FIX DEFINITIVO SCROLL E TAGLI
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* Il container principale diventa scrollabile */
+  #liveSection {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-height: none !important;
+    padding-bottom: 2rem !important;
+  }
+  
+  .live-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .live-main {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* .live-stream occupa solo lo spazio necessario, mai oltre */
+  .live-stream {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: unset !important;
+    aspect-ratio: unset !important;
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  /* Pacchetto: dimensioni contenute */
+  #packVisual,
+  .pack-visual {
+    width: 90px !important;
+    height: 110px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Durante sbustamento: bottone leggibile */
+  #openBtn {
+    width: 100% !important;
+    font-size: 1rem !important;
+    padding: 12px !important;
+  }
+
+  /* Card immagine nel reveal: altezza max per non sforare */
+  .result-card .card-img-container {
+    aspect-ratio: unset !important;
+    max-height: 42vh !important;
+    height: 42vh !important;
+    width: 100% !important;
+  }
+
+  .result-card .card-img-container img {
+    max-height: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* Result card: non forzare larghezza, lascia scorrere */
+  .result-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  /* Cash offer widget: visibile sotto la carta con scroll */
+  .cash-offer-widget,
+  #cashOfferWidget {
+    width: 100% !important;
+    margin-top: 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Titolo live info su mobile: in colonna */
+  #liveSection .live-main > div[style*="margin-top"],
+  #liveSection .live-main > div[style*="justify-content:space-between"] {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 0 4px !important;
+    margin-top: 8px !important;
+  }
+
+  #streamTitle {
+    font-size: 0.95rem !important;
+    margin: 0 !important;
+    line-height: 1.3 !important;
+  }
+  
+  .uv-toggle { font-size: 0.75rem !important; }
+
+  /* Pull log compatto */
+  #pullLog {
+    max-height: 180px !important;
+    overflow-y: auto !important;
+  }
+}
+
+/* ================================================================
+   SWAP VAULT GRID - Lista singola colonna con anteprime grandi
+   ================================================================ */
+#swapVaultGrid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  max-height: 58vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 4px 2px !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#swapVaultGrid .card-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  border: 2px solid rgba(255,255,255,0.08) !important;
+  background: var(--bg-card, #1a1a2e) !important;
+  padding: 8px 12px 8px 8px !important;
+  transition: border-color 0.2s, transform 0.15s !important;
+  min-height: 90px !important;
+}
+
+#swapVaultGrid .card-item:hover,
+#swapVaultGrid .card-item.selected {
+  border-color: var(--accent, #7c3aed) !important;
+  background: rgba(124,58,237,0.12) !important;
+}
+
+/* Thumbnail: proporzionato 5/7, fisso 70px larghezza */
+#swapVaultGrid .card-item > div:first-child {
+  width: 64px !important;
+  height: 90px !important;
+  aspect-ratio: unset !important;
+  flex-shrink: 0 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2px !important;
+}
+
+#swapVaultGrid .card-item > div:first-child img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* Nome carta in riga */
+#swapVaultGrid .card-item > div:last-child {
+  flex: 1 !important;
+  min-width: 0 !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  white-space: normal !important;
+  line-height: 1.3 !important;
+}
+
+@media (min-width: 769px) {
+  /* Desktop: torna a griglia 3 colonne ma card-item in column */
+  #swapVaultGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    max-height: 400px !important;
+  }
+  
+  #swapVaultGrid .card-item {
+    flex-direction: column !important;
+    min-height: unset !important;
+    align-items: stretch !important;
+    padding: 6px !important;
+  }
+  
+  #swapVaultGrid .card-item > div:first-child {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 5 / 7 !important;
+    position: relative !important;
+  }
+}

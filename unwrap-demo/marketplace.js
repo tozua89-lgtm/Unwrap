@@ -223,11 +223,11 @@ function openSwapModal(id, type) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:1rem">Non hai carte nel Vault da offrire.</div>`;
   } else {
     grid.innerHTML = myVault.map(c => `
-      <div class="card-item swap-selectable" id="swapMyCard-${c.id}" style="cursor:pointer;border:2px solid transparent;transition:all 0.2s" onclick="selectMyCardForSwap('${c.id}')">
-        <div style="aspect-ratio:5/7;background:${c.bg||'#0f0f1a'};padding:4px;display:flex;align-items:center;justify-content:center">
-          <img src="${c.img}" style="height:100%;width:100%;object-fit:contain">
+      <div class="card-item swap-selectable" id="swapMyCard-${c.id}" onclick="selectMyCardForSwap('${c.id}')">
+        <div style="background:${c.bg||'#0f0f1a'}">
+          <img src="${c.img}" onerror="this.style.opacity=0.3">
         </div>
-        <div style="font-size:0.6rem;text-align:center;padding:4px;font-weight:700">${c.name}</div>
+        <div>${c.name}${c.price ? `<br><span style="font-size:0.75rem;color:var(--green);font-weight:400">€${c.price.toFixed(2)}</span>` : ''}</div>
       </div>
     `).join('');
   }
