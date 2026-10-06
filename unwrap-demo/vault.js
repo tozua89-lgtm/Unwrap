@@ -359,45 +359,117 @@ function shipCard(id) {
 function openSellModal(id) {
   const card = vaultCards.find(c => c.id === id);
   if (!card) return;
+  const types = card.listingTypes || (card.listingType ? [card.listingType] : []);
+
   document.getElementById('sellModalBody').innerHTML = `
-    <div style="display:flex;gap:1rem;margin-bottom:1rem;background:var(--bg-secondary);padding:1rem;border-radius:8px">
-      <div style="width:60px;height:84px;background:${card.bg||'#0f0f1a'};padding:4px;border-radius:4px"><img src="${card.img}" style="width:100%;height:100%;object-fit:contain;"></div>
+    <!-- Anteprima carta -->
+    <div style="display:flex;gap:1rem;margin-bottom:1.25rem;background:var(--bg-secondary);padding:0.85rem;border-radius:8px;align-items:center">
+      <div style="width:52px;height:72px;background:${card.bg||'#0f0f1a'};padding:3px;border-radius:4px;flex-shrink:0">
+        <img src="${card.img}" style="width:100%;height:100%;object-fit:contain;">
+      </div>
       <div>
-        <div style="font-weight:700">${card.name}</div>
-        <div style="font-size:0.8rem;color:var(--text-muted)">Stato attuale: ${card.isListed ? '<span style="color:var(--green)">Nel Marketplace</span>' : '<span style="color:var(--text-muted)">Privata (Non Visibile)</span>'}</div>
+        <div style="font-weight:700;font-size:0.95rem">${card.name}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">${card.set} · ${card.game}</div>
+        <div style="font-size:0.75rem;margin-top:4px">${card.isListed
+          ? '<span style="color:var(--green)">✓ Già nel Marketplace</span>'
+          : '<span style="color:var(--text-muted)">🔒 Privata (non visibile)</span>'
+        }</div>
       </div>
     </div>
-    
-    <div class="form-group"><label class="form-label">Tipo di Inserzione sul Marketplace</label>
-      <select class="form-input" id="listingTypeInput">
-        <option value="sale" ${card.listingType==='sale'?'selected':''}>💳 Solo Vendita</option>
-        <option value="trade" ${card.listingType==='trade'?'selected':''}>🔄 Valuto Scambio (1:1)</option>
-        <option value="mixed" ${card.listingType==='mixed'?'selected':''}>💰 Scambio + Conguaglio</option>
-      </select>
+
+    <!-- Label istruzione -->
+    <div style="font-size:0.8rem;font-weight:700;color:var(--text-secondary);margin-bottom:0.75rem;letter-spacing:0.05em">
+      SCEGLI UNA O PIÙ MODALITÀ DI INSERZIONE
     </div>
-    
-    <div class="form-group"><label class="form-label">Prezzo / Valore per lo Scambio (€)</label>
-      <input class="form-input" type="number" value="${card.price}" id="sellPriceInput" />
+
+    <!-- Checkbox: Vendita -->
+    <label style="display:flex;align-items:flex-start;gap:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.85rem;margin-bottom:0.5rem;cursor:pointer" onclick="toggleListingSection('saleSection', this)">
+      <input type="checkbox" id="chk-sale" ${types.includes('sale')?'checked':''} style="width:18px;height:18px;accent-color:var(--green);margin-top:1px;flex-shrink:0">
+      <div>
+        <div style="font-weight:700;color:var(--green)">💳 In Vendita</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Acquisto diretto al prezzo che imposti</div>
+      </div>
+    </label>
+    <div id="saleSection" style="padding:0 0.5rem 0.5rem;display:${types.includes('sale')?'block':'none'}">
+      <label class="form-label">Prezzo di Vendita (€)</label>
+      <input class="form-input" type="number" id="sellPrice" value="${card.price}" placeholder="es. 95.00" style="margin-bottom:0.5rem">
     </div>
-    
-    <div style="display:flex;gap:10px;margin-top:1.5rem">
-      ${card.isListed ? `<button class="btn btn-outline" style="flex:1;justify-content:center;color:#ef4444;border-color:#ef4444" onclick="removeListing(${card.id})">Rimuovi Inserzione</button>` : ''}
-      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="confirmListing(${card.id})">${card.isListed ? 'Aggiorna Inserzione' : 'Pubblica Inserzione'}</button>
+
+    <!-- Checkbox: Scambio 1:1 -->
+    <label style="display:flex;align-items:flex-start;gap:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.3);border-radius:8px;padding:0.85rem;margin-bottom:0.5rem;cursor:pointer" onclick="toggleListingSection('tradeSection', this)">
+      <input type="checkbox" id="chk-trade" ${types.includes('trade')?'checked':''} style="width:18px;height:18px;accent-color:var(--accent-light);margin-top:1px;flex-shrink:0">
+      <div>
+        <div style="font-weight:700;color:var(--accent-light)">🔄 Valuto Scambio 1:1</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Scambio diretto con un'altra carta</div>
+      </div>
+    </label>
+    <div id="tradeSection" style="padding:0 0.5rem 0.5rem;display:${types.includes('trade')?'block':'none'}">
+      <label class="form-label">Cosa cerchi in cambio? (facoltativo)</label>
+      <input class="form-input" type="text" id="tradeWant" value="${card.tradeWant||''}" placeholder="es. Charizard ex SIR, Umbreon VMAX..." style="margin-bottom:0.5rem">
+    </div>
+
+    <!-- Checkbox: Scambio + Conguaglio -->
+    <label style="display:flex;align-items:flex-start;gap:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:0.85rem;margin-bottom:0.5rem;cursor:pointer" onclick="toggleListingSection('mixedSection', this)">
+      <input type="checkbox" id="chk-mixed" ${types.includes('mixed')?'checked':''} style="width:18px;height:18px;accent-color:var(--gold);margin-top:1px;flex-shrink:0">
+      <div>
+        <div style="font-weight:700;color:var(--gold)">💰 Scambio con Conguaglio</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px">Scambio + differenza in denaro</div>
+      </div>
+    </label>
+    <div id="mixedSection" style="padding:0 0.5rem 0.5rem;display:${types.includes('mixed')?'block':'none'}">
+      <label class="form-label">Conguaglio richiesto (€)</label>
+      <input class="form-input" type="number" id="mixedAmount" value="${card.mixedAmount||''}" placeholder="es. 30.00" style="margin-bottom:0.5rem">
+    </div>
+
+    <!-- Nota visibilità -->
+    <div style="font-size:0.72rem;color:var(--text-muted);background:rgba(255,255,255,0.04);border-radius:6px;padding:0.6rem;margin-top:0.25rem;margin-bottom:1rem">
+      💡 Selezionando più opzioni, gli altri utenti vedranno tutte le modalità disponibili per questa carta e potranno scegliere come contattarti.
+    </div>
+
+    <!-- Bottoni azione -->
+    <div style="display:flex;gap:10px">
+      ${card.isListed ? `<button class="btn btn-outline" style="flex:1;justify-content:center;color:#ef4444;border-color:#ef4444;font-size:0.8rem" onclick="removeListing(${card.id})">✕ Rimuovi</button>` : ''}
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="confirmListing(${card.id})">${card.isListed ? '✓ Aggiorna' : '🌐 Pubblica Inserzione'}</button>
     </div>
   `;
   document.getElementById('sellModal').classList.add('open');
 }
 
+function toggleListingSection(sectionId, labelEl) {
+  // Non fare nulla qui — il click sul checkbox gestisce già il toggle nativo.
+  // Usiamo un MutationObserver alternativo: leggiamo lo stato dopo il click.
+  setTimeout(() => {
+    const chk = labelEl.querySelector('input[type="checkbox"]');
+    const section = document.getElementById(sectionId);
+    if (section) section.style.display = chk && chk.checked ? 'block' : 'none';
+  }, 0);
+}
+
 function confirmListing(id) {
   const card = vaultCards.find(c => c.id === id);
   if (!card) return;
-  card.isListed = true;
-  card.listingType = document.getElementById('listingTypeInput').value;
-  card.price = parseFloat(document.getElementById('sellPriceInput').value) || card.price;
-  
+
+  const types = [];
+  if (document.getElementById('chk-sale')?.checked)  types.push('sale');
+  if (document.getElementById('chk-trade')?.checked) types.push('trade');
+  if (document.getElementById('chk-mixed')?.checked) types.push('mixed');
+
+  if (types.length === 0) {
+    showNotif('⚠️ Nessuna modalità', 'Seleziona almeno una opzione di inserzione.', '');
+    return;
+  }
+
+  card.isListed     = true;
+  card.listingTypes = types;
+  card.listingType  = types[0]; // retrocompatibilità
+  card.price        = parseFloat(document.getElementById('sellPrice')?.value)  || card.price;
+  card.tradeWant    = document.getElementById('tradeWant')?.value  || '';
+  card.mixedAmount  = parseFloat(document.getElementById('mixedAmount')?.value) || 0;
+
   document.getElementById('sellModal').classList.remove('open');
   filterCards();
-  showNotif('🌐 Inserzione Attiva', 'La tua carta è ora visibile nel Marketplace globale.', 'success');
+  const modeLabel = types.map(t => ({'sale':'Vendita','trade':'Scambio','mixed':'Scambio+Conguaglio'}[t])).join(' · ');
+  showNotif('🌐 Inserzione Attiva', `Modalità: ${modeLabel}`, 'success');
 }
 
 function removeListing(id) {

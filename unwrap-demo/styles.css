@@ -2634,3 +2634,35 @@ img { max-width: 100%; }
     gap: 10px !important;
   }
 }
+
+/* ================================================================
+   SELL MODAL + VAULT CARD BUTTONS — Mobile Fix
+   ================================================================ */
+
+/* Modal inserzione: scrollabile su mobile */
+#sellModal .modal {
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  /* Modal inserzione: occupa quasi tutto lo schermo verticalmente */
+  #sellModal .modal {
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    padding: 1rem !important;
+  }
+
+  /* Bottoni card nel vault: in colonna per non troncarsi */
+  .card-item-info > div[style*="display:flex"][style*="gap:4px"] {
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+  .card-item-info > div[style*="display:flex"][style*="gap:4px"] .btn {
+    flex: unset !important;
+    width: 100% !important;
+    font-size: 0.62rem !important;
+    padding: 7px 4px !important;
+  }
+}
