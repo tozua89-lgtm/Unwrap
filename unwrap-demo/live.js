@@ -29,7 +29,10 @@ function confirmSlotSelection() {
 // ─── START LIVE SESSION ────────────────────────────
 function startLiveSession() {
   document.getElementById('bookingSection').style.display = 'none';
-  document.getElementById('liveSection').style.display = 'block';
+  var liveSection = document.getElementById('liveSection');
+  liveSection.style.display = 'block';
+  // Scroll all'inizio così il nav fisso non copre il contenuto
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   showNotif('Live Avviata', 'Apertura prodotti di: ' + currentGame, 'success');
 }
 
