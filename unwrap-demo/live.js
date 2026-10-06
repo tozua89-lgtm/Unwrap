@@ -1,14 +1,14 @@
-/* =============================================
-   UNWRAP — Live Opening JS v5
+﻿/* =============================================
+   UNWRAP â€” Live Opening JS v5
    Game Filtering per coerenza sbustamento
    ============================================= */
 
 let isOpening = false;
 let packCount = 0;
 let currentPulls = [];
-let currentGame = 'Pokémon TCG'; // Default
+let currentGame = 'PokÃ©mon TCG'; // Default
 
-// ─── BOOKING MODAL ─────────────────────────
+// â”€â”€â”€ BOOKING MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openBookingModal() {
   const modal = document.getElementById('bookingModal');
   if (modal) modal.classList.add('open');
@@ -23,16 +23,16 @@ function confirmSlotSelection() {
   const day = document.getElementById('bookingDay').value;
   const time = document.getElementById('bookingTime').value;
   closeBookingModal();
-  showNotif('📅 Sessione Prenotata!', `Il tuo slot è confermato per ${day} alle ${time}.`, 'success');
+  showNotif('ðŸ“… Sessione Prenotata!', `Il tuo slot Ã¨ confermato per ${day} alle ${time}.`, 'success');
   
-  // Per simulazione, avvia comunque la live così l'utente può provare
+  // Per simulazione, avvia comunque la live cosÃ¬ l'utente puÃ² provare
   setTimeout(startLiveSession, 800);
 }
 
 function startLiveSession() {
   document.getElementById('bookingSection').style.display = 'none';
   document.getElementById('liveSection').style.display = 'block';
-  showNotif('🔴 Live Avviata', `Apertura prodotti di: ${currentGame}`, 'success');
+  showNotif('ðŸ”´ Live Avviata', `Apertura prodotti di: ${currentGame}`, 'success');
 }
 
 function renderPullLog(pulls) {
@@ -49,9 +49,9 @@ function renderPullLog(pulls) {
       </div>
       <div style="flex:1;min-width:0">
         <div class="pull-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${card.name}</div>
-        <div class="pull-grade">${card.rarity.toUpperCase()} ${card.rarity!=='common' ? '· ▶ Proof' : '(Bulk)'}</div>
+        <div class="pull-grade">${card.rarity.toUpperCase()} ${card.rarity!=='common' ? 'Â· â–¶ Proof' : '(Bulk)'}</div>
       </div>
-      ${card.price ? `<div class="pull-value">€${card.price.toFixed(2)}</div>` : ''}
+      ${card.price ? `<div class="pull-value">â‚¬${card.price.toFixed(2)}</div>` : ''}
     </div>
   `).join('');
 }
@@ -73,7 +73,7 @@ async function openPack() {
   packVisual.classList.add('opening');
   packVisual.style.pointerEvents = 'none';
   openBtn.disabled = true;
-  openBtn.textContent = '⏳ Strappo pacchetto...';
+  openBtn.textContent = 'â³ Strappo pacchetto...';
 
   // Seleziona dal database SOLO le carte corrispondenti al gioco comprato
   const gameCards = CARD_DB.filter(c => c.game === currentGame && (c.rarity === 'secret' || c.rarity === 'ultra'));
@@ -95,14 +95,14 @@ async function openPack() {
     packVisual.innerHTML = `<img src="${commonCard.img}" style="height:100px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,0.5))">`;
     packVisual.style.background = commonCard.bg;
     packVisual.style.boxShadow = 'none';
-    openBtn.textContent = `🃏 Carta ${i+1}/${sequenceLength+1} (Comune)`;
+    openBtn.textContent = `ðŸƒ Carta ${i+1}/${sequenceLength+1} (Comune)`;
     
     currentPulls = [commonCard, ...currentPulls];
     renderPullLog(currentPulls.slice(0, 14));
     await new Promise(r => setTimeout(r, 800));
   }
 
-  // ── Aggiorna contatore Bulk nel localStorage ──
+  // â”€â”€ Aggiorna contatore Bulk nel localStorage â”€â”€
   const CARD_WEIGHT_G = 1.8; // grammi per carta
   const PRICE_PER_G  = 0.01;
   try {
@@ -114,18 +114,18 @@ async function openPack() {
   } catch(e) {}
 
   // RIVELAZIONE DELLA HIT
-  openBtn.textContent = `✨ RIVELAZIONE HIT!`;
+  openBtn.textContent = `âœ¨ RIVELAZIONE HIT!`;
   packVisual.innerHTML = `<img src="${highlight.img}" style="height:120px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(255,215,0,0.8))">`;
   packVisual.style.background = highlight.bg;
   packVisual.style.boxShadow = `0 0 40px rgba(124,58,237,0.7)`;
 
-  const rarityLabels = { secret: '🏆 SECRET RARE', ultra: '💎 ULTRA RARE', rare: '⭐ RARE', common: '📄 COMMON' };
+  const rarityLabels = { secret: 'ðŸ† SECRET RARE', ultra: 'ðŸ’Ž ULTRA RARE', rare: 'â­ RARE', common: 'ðŸ“„ COMMON' };
   const rarityColors = { secret: '#ef4444', ultra: '#f59e0b', rare: '#a855f7', common: '#6060a0' };
   const col = rarityColors[highlight.rarity];
 
   resultCard.innerHTML = `
     <!-- Pulsante Chiudi -->
-    <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;line-height:1" onclick="closeOpenResult()">×</button>
+    <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;line-height:1" onclick="closeOpenResult()">Ã—</button>
     <!-- Immagine carta: altezza adattiva al viewport -->
     <div style="height:clamp(160px,30vw,240px);background:${highlight.bg};border-radius:var(--radius);overflow:hidden;margin-bottom:0.75rem;position:relative;padding:0.75rem;display:flex;justify-content:center;align-items:center;margin-top:10px">
       <img src="${highlight.img}" style="max-height:100%;max-width:100%;object-fit:contain" onerror="this.style.display='none'" />
@@ -134,12 +134,12 @@ async function openPack() {
     <!-- Info carta -->
     <div class="result-name" style="font-size:clamp(1rem,4vw,1.3rem)">${highlight.name}</div>
     <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.3rem">${highlight.game}</div>
-    <div class="result-value" style="margin-bottom:0.5rem;font-size:clamp(0.9rem,3.5vw,1.1rem)">Valore: <strong style="color:var(--green)">€${highlight.price.toFixed(2)}</strong></div>
+    <div class="result-value" style="margin-bottom:0.5rem;font-size:clamp(0.9rem,3.5vw,1.1rem)">Valore: <strong style="color:var(--green)">â‚¬${highlight.price.toFixed(2)}</strong></div>
     <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.4">Aggiunta al Vault con Proof of Pull 4K notarizzata.<br><em>Le carte comuni sono state aggiunte al Bulk.</em></div>
     <!-- Bottoni sempre visibili -->
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-      <button class="btn btn-primary" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px" onclick='openProofVideo(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>▶ Proof Video</button>
-      <button class="btn btn-outline" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px;border-color:var(--gold);color:var(--gold)" onclick='instantSellLive(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>⚡ Vendi (€${(highlight.price * 0.85).toFixed(2)})</button>
+      <button class="btn btn-primary" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px" onclick='openProofVideo(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>â–¶ Proof Video</button>
+      <button class="btn btn-outline" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px;border-color:var(--gold);color:var(--gold)" onclick='instantSellLive(${JSON.stringify(highlight).replace(/"/g,'&quot;')})'>âš¡ Vendi (â‚¬${(highlight.price * 0.85).toFixed(2)})</button>
     </div>
   `;
 
@@ -150,7 +150,7 @@ async function openPack() {
   currentPulls = [highlight, ...currentPulls];
   renderPullLog(currentPulls.slice(0, 14));
 
-  // ── Salva nel Vault locale ──
+  // â”€â”€ Salva nel Vault locale â”€â”€
   try {
     let pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
     let newCard = JSON.parse(JSON.stringify(highlight));
@@ -172,7 +172,7 @@ async function openPack() {
   
 }
 
-// ─── INSTANT SELL ─────────────────────────────────
+// â”€â”€â”€ INSTANT SELL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function instantSellLive(cardObj) {
   const offer = Math.round(cardObj.price * 0.85);
   window.unwrapWallet += parseFloat(offer);
@@ -208,11 +208,10 @@ function instantSellLive(cardObj) {
   openBtn.textContent = '? Apri Prossimo Pack';
   isOpening = false;
   
-  showNotif('? Rivendita Istantanea', Hai venduto la carta per � + offer.toFixed(2) + . Il saldo � stato aggiornato., 'success');
-}. Il saldo è stato aggiornato.`, 'success');
+  showNotif('Vendita Istantanea', 'Hai venduto la carta.', 'success');
 }
 
-// ─── CASH OFFER ───────────────────────────────
+// --- CASH OFFER ---
 let cashOfferTimer = null;
 let currentCashOfferCardId = null;
 
@@ -221,8 +220,8 @@ function triggerCashOffer(card) {
   const widget = document.getElementById('cashOfferWidget');
   if (!widget) return;
   if (cashOfferTimer) clearInterval(cashOfferTimer);
-  document.getElementById('cashOfferCard').innerHTML = `<span style="font-weight:700">${card.name}</span>`;
-  document.getElementById('cashOfferAmount').textContent = `€${offer}`;
+  document.getElementById('cashOfferCard').innerHTML = <span style="font-weight:700">+card.name+</span>;
+  document.getElementById('cashOfferAmount').textContent = €+offer;
   currentCashOfferCardId = card.id;
   widget.style.display = 'block';
 
@@ -232,7 +231,7 @@ function triggerCashOffer(card) {
     const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
     const tel = document.getElementById('cashOfferTimer');
-    if(tel) tel.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(tel) tel.textContent = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
     if (secs <= 0) { clearInterval(cashOfferTimer); widget.style.display = 'none'; }
     secs--;
   }, 1000);
@@ -242,7 +241,7 @@ function acceptCashOffer() {
   if (cashOfferTimer) clearInterval(cashOfferTimer);
   document.getElementById('cashOfferWidget').style.display = 'none';
   window.unwrapWallet += parseInt(document.getElementById('cashOfferAmount').textContent.replace('€',''));
-  updateWalletUI();
+  if (typeof updateWalletUI === 'function') updateWalletUI();
   
   // Rimuovi dal Vault locale
   if (currentCashOfferCardId) {
@@ -254,7 +253,7 @@ function acceptCashOffer() {
     } catch(e) {}
   }
   
-  showNotif('✅ Cash Offer Accettata!', 'Il credito è stato aggiunto al tuo Wallet istantaneamente.', 'success');
+  showNotif('Cash Offer Accettata!', 'Il credito è stato aggiunto al tuo Wallet istantaneamente.', 'success');
 }
 
 function declineCashOffer() {
@@ -276,7 +275,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-
 function closeOpenResult() {
   document.getElementById('openResult').style.display = 'none';
   document.querySelector('.live-stream').classList.remove('has-result');
@@ -284,7 +282,7 @@ function closeOpenResult() {
   if (cashWidget) cashWidget.style.display = 'none';
   
   const packVisual = document.getElementById('packVisual');
-  packVisual.innerHTML = '??';
+  packVisual.innerHTML = '📦';
   packVisual.style.fontSize = '2rem';
   packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
   packVisual.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
@@ -292,10 +290,6 @@ function closeOpenResult() {
   
   const openBtn = document.getElementById('openBtn');
   openBtn.disabled = false;
-  openBtn.textContent = '? Apri Prossimo Pack';
+  openBtn.textContent = '▶ Apri Prossimo Pack';
   isOpening = false;
 }
-
-
-
-
