@@ -1,5 +1,5 @@
-/* =============================================
-   UNWRAP — TCG NOTARY PROTOCOL
+﻿/* =============================================
+   UNWRAP â€” TCG NOTARY PROTOCOL
    Global Styles
    ============================================= */
 
@@ -633,7 +633,7 @@ img { max-width: 100%; }
 }
 
 .card-art.charizard::before {
-  content: '🔥';
+  content: 'ðŸ”¥';
   position: absolute;
   font-size: 4rem;
   top: 50%; left: 50%;
@@ -1927,7 +1927,7 @@ img { max-width: 100%; }
   .footer-links { flex-direction: column; gap: 2rem; }
   .grading-info { grid-template-columns: 1fr; }
   .hero-stats { gap: 1rem; }
-  .nav-links, .nav-actions { display: none; }
+  /* nav-links e nav-actions SEMPRE visibili - rimosso display:none */
   .nav-burger { display: block; }
   .cash-offer-banner { flex-direction: column; }
 }
@@ -1938,7 +1938,7 @@ img { max-width: 100%; }
   .bulk-grid { grid-template-columns: 1fr; }
 }
 /* =============================================
-   UNWRAP — Premium Digital Slab CSS & Vault Fixes
+   UNWRAP â€” Premium Digital Slab CSS & Vault Fixes
    ============================================= */
 
 .slab-premium-wrapper {
@@ -2080,7 +2080,7 @@ img { max-width: 100%; }
 }
 
 /* =============================================
-   UNWRAP — Wallet, Bulk & Mini-Slab Updates
+   UNWRAP â€” Wallet, Bulk & Mini-Slab Updates
    ============================================= */
 
 /* Coda pacchetto visual fallback */
@@ -2353,5 +2353,200 @@ img { max-width: 100%; }
   .nav-links a.active {
     background: rgba(124,58,237,0.3) !important;
     color: white !important;
+  }
+}
+
+/* =============================================
+   FINAL MOBILE FIXES (WALLET, LIVE STREAM, MARKETPLACE)
+   ============================================= */
+@media (max-width: 768px) {
+  /* 1. Wallet Visibile in Alto a Destra */
+  .nav-actions {
+    display: flex !important;
+    margin: 0 !important;
+  }
+  
+  /* 2. Live Stream Area (Non tagliare il bottone) */
+  .live-stream {
+    aspect-ratio: auto !important;
+    min-height: 450px !important;
+    padding: 20px 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .pack-interaction {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    margin-top: 40px !important;
+  }
+  #packVisual {
+    height: 180px !important;
+    width: 130px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 4rem !important;
+  }
+  
+  /* 3. Marketplace Griglia (2 colonne su mobile) */
+  .mp-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .mp-listing-body {
+    padding: 8px !important;
+  }
+  .mp-price {
+    font-size: 0.85rem !important;
+  }
+  .mp-listing-actions .btn {
+    font-size: 0.65rem !important;
+    padding: 6px !important;
+  }
+}
+
+
+/* ================================================================
+   PATCH DEFINITIVA MOBILE — v3 FINAL
+   (Sovrascrive tutti i conflitti precedenti con !important)
+   ================================================================ */
+
+/* ── 1. NAVBAR: tutte le sezioni e il wallet sempre visibili ── */
+@media (max-width: 768px) {
+  nav.nav { height: auto !important; }
+  
+  .nav-inner {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: 10px 12px !important;
+    gap: 0 !important;
+    row-gap: 10px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  /* Logo e wallet sulla stessa riga in alto */
+  a.logo { font-size: 1.3rem !important; order: 1 !important; }
+  .nav-actions { 
+    display: flex !important; 
+    order: 2 !important; 
+    margin: 0 !important; 
+  }
+  .wallet-badge {
+    font-size: 0.78rem !important;
+    padding: 5px 10px !important;
+  }
+  
+  /* Links menu: riga completa sotto, tutto visibile senza scroll */
+  ul.nav-links {
+    display: flex !important;
+    order: 3 !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    list-style: none !important;
+  }
+  ul.nav-links li { margin: 0 !important; }
+  ul.nav-links a {
+    display: block !important;
+    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    border: none !important;
+    white-space: nowrap !important;
+    color: var(--text-secondary) !important;
+  }
+  ul.nav-links a.active,
+  ul.nav-links a:hover {
+    background: rgba(124,58,237,0.35) !important;
+    color: white !important;
+    border-bottom: none !important;
+  }
+
+  /* ── 2. LIVE OPENING: bottone sempre visibile ── */
+  .live-stream {
+    aspect-ratio: unset !important;
+    min-height: 420px !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 20px !important;
+  }
+  .stream-overlay {
+    position: relative !important;
+    inset: unset !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    padding: 1rem 0 !important;
+  }
+  .pack-interaction {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    padding: 10px !important;
+  }
+  #packVisual {
+    height: 160px !important;
+    width: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 3.5rem !important;
+    border-radius: 12px !important;
+  }
+  #openBtn {
+    font-size: 1rem !important;
+    padding: 14px 28px !important;
+    width: 90% !important;
+    justify-content: center !important;
+  }
+  .live-badge {
+    position: relative !important;
+    top: unset !important;
+    left: unset !important;
+    margin-bottom: 10px !important;
+  }
+  .fullscreen-btn { display: none !important; }
+
+  /* ── 3. MARKETPLACE: griglia 2 colonne ── */
+  .mp-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  .mp-listing-img { height: 130px !important; }
+  .mp-listing-body { padding: 8px !important; }
+  .mp-listing-name { font-size: 0.78rem !important; }
+  .mp-listing-set { font-size: 0.65rem !important; }
+  .mp-price { font-size: 0.9rem !important; }
+  .mp-listing-actions { flex-direction: column !important; gap: 4px !important; }
+  .mp-listing-actions .btn {
+    font-size: 0.65rem !important;
+    padding: 6px !important;
+    width: 100% !important;
+  }
+
+  /* ── 4. GRIGLIA STORE PRODOTTI SIGILLATI ── */
+  #storeGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 }
