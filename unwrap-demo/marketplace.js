@@ -213,15 +213,19 @@ function openSwapModal(id, type) {
   document.getElementById('swapCashInputDiv').style.display = type === 'mixed' ? 'block' : 'none';
 
   const grid = document.getElementById('swapVaultGrid');
-  const myVault = CARD_DB.filter(c => c.owner === 'me');
+  let myVault = CARD_DB.filter(c => c.owner === 'me');
+  try {
+    const pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    myVault = [...pulled, ...myVault];
+  } catch(e) {}
   
   if(myVault.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:1rem">Non hai carte nel Vault da offrire.</div>`;
   } else {
     grid.innerHTML = myVault.map(c => `
-      <div class="card-item swap-selectable" id="swapMyCard-${c.id}" style="cursor:pointer;border:2px solid transparent;transition:all 0.2s" onclick="selectMyCardForSwap(${c.id})">
-        <div style="height:100px;background:${c.bg||'#0f0f1a'};padding:4px;display:flex;align-items:center;justify-content:center">
-          <img src="${c.img}" style="max-height:100%;object-fit:contain">
+      <div class="card-item swap-selectable" id="swapMyCard-${c.id}" style="cursor:pointer;border:2px solid transparent;transition:all 0.2s" onclick="selectMyCardForSwap('${c.id}')">
+        <div style="aspect-ratio:5/7;background:${c.bg||'#0f0f1a'};padding:4px;display:flex;align-items:center;justify-content:center">
+          <img src="${c.img}" style="height:100%;width:100%;object-fit:contain">
         </div>
         <div style="font-size:0.6rem;text-align:center;padding:4px;font-weight:700">${c.name}</div>
       </div>
@@ -252,3 +256,5 @@ window.addEventListener('DOMContentLoaded', () => {
   renderStoreGrid(SEALED_PRODUCTS);
   renderMarketGrid(MARKET_LISTINGS);
 });
+
+

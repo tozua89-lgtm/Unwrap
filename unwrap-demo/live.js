@@ -169,17 +169,7 @@ async function openPack() {
     setTimeout(() => triggerCashOffer(highlight), 800);
   }
 
-  setTimeout(() => {
-    document.querySelector('.live-stream').classList.remove('has-result');
-    packVisual.innerHTML = '📦';
-    packVisual.style.fontSize = '2rem';
-    packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
-    packVisual.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
-    packVisual.style.pointerEvents = 'auto';
-    openBtn.disabled = false;
-    openBtn.textContent = `▶ Apri Prossimo Pack`;
-    isOpening = false;
-  }, 5000);
+  
 }
 
 // ─── INSTANT SELL ─────────────────────────────────
@@ -203,10 +193,23 @@ function instantSellLive(cardObj) {
   const cashWidget = document.getElementById('cashOfferWidget');
   if (cashWidget) cashWidget.style.display = 'none';
   
-  document.getElementById('openResult').style.display = 'none';
+    document.getElementById('openResult').style.display = 'none';
   document.querySelector('.live-stream').classList.remove('has-result');
   
-  showNotif('✅ Rivendita Istantanea', `Hai venduto la carta per €${offer.toFixed(2)}. Il saldo è stato aggiornato.`, 'success');
+  const packVisual = document.getElementById('packVisual');
+  packVisual.innerHTML = '??';
+  packVisual.style.fontSize = '2rem';
+  packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
+  packVisual.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
+  packVisual.style.pointerEvents = 'auto';
+  
+  const openBtn = document.getElementById('openBtn');
+  openBtn.disabled = false;
+  openBtn.textContent = '? Apri Prossimo Pack';
+  isOpening = false;
+  
+  showNotif('? Rivendita Istantanea', Hai venduto la carta per � + offer.toFixed(2) + . Il saldo � stato aggiornato., 'success');
+}. Il saldo è stato aggiornato.`, 'success');
 }
 
 // ─── CASH OFFER ───────────────────────────────
@@ -292,3 +295,7 @@ function closeOpenResult() {
   openBtn.textContent = '? Apri Prossimo Pack';
   isOpening = false;
 }
+
+
+
+
