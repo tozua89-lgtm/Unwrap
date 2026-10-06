@@ -132,8 +132,8 @@ const SEALED_PRODUCTS = [
   {
     id: 'pk-bs', game: 'Pokémon TCG', type: 'vintage', price: 380.00,
     name: 'Booster Pack Base Set (1999)',
-    img: 'https://upload.wikimedia.org/wikipedia/en/3/3b/Pokemon_Trading_Card_Game_booster_pack.jpg',
-    bg: '#1a1000'
+    img: './img/pack-pokemon-sv3.png', bg: '#1a1000'
+    // Nota: immagine placeholder fino a quando non sarà disponibile una foto reale
   },
   {
     id: 'op-warriors-en', game: 'One Piece TCG', type: 'box', price: 135.00,
@@ -144,12 +144,6 @@ const SEALED_PRODUCTS = [
     id: 'op-warriors-jp', game: 'One Piece TCG', type: 'pack', price: 6.50,
     name: "Booster Pack OP-17 (Japanese Edition)",
     img: './img/box-op-warriors-jp.png', bg: '#1a1000'
-  },
-  {
-    id: 'rb-1e', game: 'Riftbound', type: 'box', price: 120.00,
-    name: 'Booster Box Riftbound First Edition',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Pokemon_cards_for_sale_at_Dragon_Con_2011.jpg/320px-Pokemon_cards_for_sale_at_Dragon_Con_2011.jpg',
-    bg: '#0a1a15'
   },
 ];
 

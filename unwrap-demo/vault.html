@@ -79,7 +79,7 @@
           <h3 style="font-weight:900; font-size:1.5rem; margin-bottom:0.5rem" id="bulkTitle">Il Tuo Bulk: 415 Carte (747 Grammi) <span style="font-size:1rem;font-weight:400;color:var(--text-muted)">(Valutazione attuale: €0.01 / grammo)</span></h3>
           <p style="color:var(--text-secondary); margin-bottom:2rem">Comuni e non comuni sbustate durante le Live. Opzioni "Zero Waste" per l'ambiente e la community.</p>
           
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem">
+          <div class="bulk-options-grid">
             <div style="background:rgba(124,58,237,0.1);border:1px solid var(--accent);border-radius:8px;padding:1.5rem;text-align:center">
               <div style="font-size:2rem;margin-bottom:10px">🎁</div>
               <h4 style="margin-bottom:10px">Converti in Bulk Points</h4>
@@ -90,7 +90,7 @@
             <div style="background:rgba(16,185,129,0.1);border:1px solid var(--green);border-radius:8px;padding:1.5rem;text-align:center">
               <div style="font-size:2rem;margin-bottom:10px">⚖️</div>
               <h4 style="margin-bottom:10px">Vendi al Grammo</h4>
-              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Vendi a Unwrap. Valore: <strong>€4.15</strong></p>
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:1rem">Vendi a Unwrap. Valore: <strong id="bulkSellValue">€4.15</strong></p>
               <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="sellBulk()">Vendi Bulk</button>
             </div>
             

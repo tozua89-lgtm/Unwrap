@@ -2550,3 +2550,87 @@ img { max-width: 100%; }
     gap: 10px !important;
   }
 }
+
+/* ================================================================
+   VAULT MOBILE — fix tab wrap, sidebar, bulk grid, cards grid
+   ================================================================ */
+
+/* Classe bulk-options-grid — desktop 3 colonne, mobile 1 colonna */
+.bulk-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  /* Layout Vault: sidebar sopra, main sotto */
+  .vault-layout {
+    flex-direction: column !important;
+    display: flex !important;
+  }
+  .vault-sidebar {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+  }
+  .vault-profile { 
+    display: flex !important; 
+    align-items: center !important; 
+    gap: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .vault-stats-panel .vs-row {
+    font-size: 0.85rem !important;
+  }
+  
+  /* Tab principali Vault (Carte/Bulk/Offerte/Swap): wrap su piu' righe */
+  .vault-main > div:first-child {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    padding-bottom: 8px !important;
+  }
+  #tab-cards, #tab-bulk, #tab-offers, #tab-swapboard {
+    font-size: 0.72rem !important;
+    padding: 7px 10px !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Griglia carte vault: 2 colonne su mobile */
+  .cards-grid, #cardsGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  /* Card item dimensioni ridotte */
+  .card-item-img {
+    height: 160px !important;
+  }
+  .card-item-name { font-size: 0.72rem !important; }
+  .card-item-set  { font-size: 0.62rem !important; }
+  .card-item-price { font-size: 0.85rem !important; }
+  .card-item-footer { margin-top: 4px !important; }
+
+  /* Titolo bulk su mobile: testo più piccolo */
+  #bulkTitle {
+    font-size: 1.1rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Bulk options: 1 colonna su mobile */
+  .bulk-options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* Toolbar Vault (search + filtri): in colonna */
+  .vault-toolbar {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  /* Swap Board: 2 colonne */
+  #swapBoardGrid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}

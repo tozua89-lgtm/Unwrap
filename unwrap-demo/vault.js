@@ -20,6 +20,33 @@ function syncGrading() {
   vaultCards = [...CARD_DB.filter(c => c.owner === 'me')];
 }
 
+function syncBulk() {
+  try {
+    const PRICE_PER_G = 0.01;
+    const bulk = JSON.parse(localStorage.getItem('unwrap_bulk') || '{"count":415,"weight":747}');
+    const count  = bulk.count;
+    const weight = bulk.weight;
+    const value  = (weight * PRICE_PER_G).toFixed(2);
+
+    // Statistiche nella sidebar
+    const elCount  = document.getElementById('statBulk');
+    const elWeight = document.getElementById('statBulkWeight');
+    if (elCount)  elCount.textContent  = count;
+    if (elWeight) elWeight.textContent = weight + ' g';
+
+    // Titolo nel pannello Bulk
+    const elTitle = document.getElementById('bulkTitle');
+    if (elTitle) {
+      elTitle.innerHTML = `Il Tuo Bulk: ${count} Carte (${weight} Grammi) <span style="font-size:1rem;font-weight:400;color:var(--text-muted)">(Valutazione attuale: €0.01 / grammo)</span>`;
+    }
+
+    // Valore vendita
+    const elSell = document.getElementById('bulkSellValue');
+    if (elSell) elSell.textContent = '€' + value;
+  } catch(e) {}
+}
+
+
 const INCOMING_OFFERS = [
   { id: 1, cardId: 3,  cardName: 'Umbreon VMAX (Alt Art)',  offer: 780.00, buyer: 'UmbreonCollector' },
   { id: 2, cardId: 6,  cardName: 'Charizard Holo (1999)',   offer: 420.00, buyer: 'NostalgicTrader'  },
@@ -428,6 +455,7 @@ function acceptCashOfferFromVault() {
 
 window.addEventListener('DOMContentLoaded', () => {
   syncGrading();
+  syncBulk();
   if(typeof updateWalletUI === 'function') updateWalletUI();
   renderCards(vaultCards);
   document.getElementById('statCards').textContent = vaultCards.length;

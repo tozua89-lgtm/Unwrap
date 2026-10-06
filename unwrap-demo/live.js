@@ -85,6 +85,17 @@ async function openPack() {
     await new Promise(r => setTimeout(r, 800));
   }
 
+  // ── Aggiorna contatore Bulk nel localStorage ──
+  const CARD_WEIGHT_G = 1.8; // grammi per carta
+  const PRICE_PER_G  = 0.01;
+  try {
+    let bulk = JSON.parse(localStorage.getItem('unwrap_bulk') || '{"count":415,"weight":747}');
+    bulk.count  += sequenceLength;
+    bulk.weight  = Math.round(bulk.count * CARD_WEIGHT_G);
+    bulk.value   = (bulk.weight * PRICE_PER_G).toFixed(2);
+    localStorage.setItem('unwrap_bulk', JSON.stringify(bulk));
+  } catch(e) {}
+
   // RIVELAZIONE DELLA HIT
   openBtn.textContent = `✨ RIVELAZIONE HIT!`;
   packVisual.innerHTML = `<img src="${highlight.img}" style="height:120px;object-fit:contain;filter:drop-shadow(0 0 20px rgba(255,215,0,0.8))">`;
