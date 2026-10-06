@@ -2262,3 +2262,43 @@ img { max-width: 100%; }
     transform: scale(0.55) !important;
   }
 }
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column !important;
+    padding-top: 120px !important;
+    text-align: center;
+    gap: 2rem;
+  }
+  .hero-title {
+    font-size: 2.8rem !important;
+  }
+  .hero-sub, .hero-subtitle {
+    margin: 0 auto 1.5rem auto !important;
+  }
+  .hero-ctas, .hero-buttons {
+    justify-content: center !important;
+  }
+  .hero-cards {
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .floating-card {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    animation: none !important;
+    width: 150px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid-3 { grid-template-columns: 1fr !important; }
+}
