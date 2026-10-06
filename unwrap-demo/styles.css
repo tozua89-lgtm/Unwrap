@@ -2151,3 +2151,114 @@ img { max-width: 100%; }
 .badge-sale { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid var(--green); }
 .badge-trade { background: rgba(124,58,237,0.15); color: var(--accent-light); border: 1px solid var(--accent); }
 .badge-mixed { background: rgba(245,158,11,0.15); color: var(--gold); border: 1px solid var(--gold); }
+
+/* =============================================
+   MOBILE RESPONSIVENESS OVERRIDES
+   ============================================= */
+@media (max-width: 768px) {
+  /* Layout & Contenitori */
+  .section { padding: 50px 0; }
+  .hero h1 { font-size: 2.5rem; }
+  .hero p { font-size: 1rem; padding: 0 10px; }
+  
+  /* Griglie */
+  .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  #cardsGrid, #marketGrid, #vaultSelectGrid, #swapBoardGrid { 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 10px; 
+  }
+  
+  /* Navigazione */
+  .nav .container {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+  }
+  .nav-brand { font-size: 1.2rem; margin-bottom: 5px; }
+  .nav-links {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    gap: 15px;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  
+  /* Modali (Popup) */
+  .modal {
+    width: 95vw !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin: 0 !important;
+  }
+  .modal-overlay {
+    padding: 10px;
+    align-items: center;
+  }
+  
+  /* Slab nel Modale */
+  .slab-premium-wrapper {
+    transform: scale(0.7) !important;
+  }
+  #cardDetailBody {
+    min-height: auto !important;
+    height: auto !important;
+    padding: 10px !important;
+  }
+  
+  /* Proof Video Canvas */
+  #proofVideoModal .modal { width: 100% !important; height: auto !important; }
+  
+  /* Tab Filtri (Vault & Market) */
+  .filter-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 5px;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .filter-tab { flex-shrink: 0; padding: 8px 12px; font-size: 0.8rem; }
+  
+  /* Live Opening */
+  .live-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  #packVisual { height: 350px; font-size: 1.5rem; }
+  
+  /* Bottoni e Controlli */
+  .btn { padding: 10px 15px; font-size: 0.8rem; }
+  .card-item-info .btn { padding: 8px 10px; font-size: 0.7rem; }
+  .select-filter, .search-input { width: 100%; margin-bottom: 10px; }
+  
+  /* Offerte Vault */
+  .offer-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: left;
+    gap: 1rem !important;
+  }
+  .offer-item > div:last-child {
+    align-items: stretch !important;
+    width: 100%;
+  }
+  .offer-item > div:last-child .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 2rem; }
+  #cardsGrid, #marketGrid, #vaultSelectGrid, #swapBoardGrid { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+  .card-item-name { font-size: 0.75rem; }
+  .card-item-set { font-size: 0.65rem; }
+  .card-item-price { font-size: 0.9rem; }
+  
+  .slab-premium-wrapper {
+    transform: scale(0.55) !important;
+  }
+}
