@@ -106,7 +106,7 @@ function renderCards(cards) {
 
     return `
     <div class="card-item" style="${card.isFresh ? 'border:1px solid var(--gold);box-shadow:0 0 15px rgba(245,158,11,0.2)' : ''}">
-      <div class="card-item-img" style="background:${card.grade ? 'transparent' : (card.bg||'#0f0f1a')};position:relative;overflow:hidden;cursor:pointer;padding:${card.grade?'0':'8px'}" onclick="openCardDetail(${card.id})">
+      <div class="card-item-img" style="background:${card.grade ? 'transparent' : (card.bg||'#0f0f1a')};position:relative;overflow:hidden;cursor:pointer;padding:${card.grade?'0':'8px'}" onclick="openCardDetail('${card.id}')">
         ${imgHTML}
         ${!card.grade && card.rarity ? `<div class="card-item-rarity rarity-${card.rarity}" style="position:absolute;top:4px;right:4px">${card.rarity.toUpperCase()}</div>` : ''}
         ${card.proof && !card.grade ? `<div class="proof-badge" style="cursor:pointer;z-index:2;bottom:${card.isFresh?'18px':'4px'}" onclick="event.stopPropagation();openProofVideo(${JSON.stringify(card).replace(/"/g,'&quot;')})">▶ PROOF</div>` : ''}
@@ -119,10 +119,10 @@ function renderCards(cards) {
           <div class="card-item-price">€${card.price.toFixed(2)}</div>
         </div>
         <div style="display:flex;gap:4px;margin-top:8px">
-          <button class="btn" style="flex:1;padding:5px;font-size:0.65rem;background:rgba(16,185,129,0.1);color:var(--green);border:1px solid var(--green);border-radius:4px;justify-content:center" onclick="openSellModal(${card.id})">${card.isListed ? '✏️ Modifica Ins.' : '📢 Pubblica'}</button>
-          <button class="btn" style="flex:1;padding:5px;font-size:0.65rem;background:rgba(124,58,237,0.1);color:var(--accent-light);border:1px solid var(--accent);border-radius:4px;justify-content:center" onclick="openCardDetail(${card.id})">📦 Spedisci</button>
+          <button class="btn" style="flex:1;padding:5px;font-size:0.65rem;background:rgba(16,185,129,0.1);color:var(--green);border:1px solid var(--green);border-radius:4px;justify-content:center" onclick="openSellModal('${card.id}')">${card.isListed ? '✏️ Modifica Ins.' : '📢 Pubblica'}</button>
+          <button class="btn" style="flex:1;padding:5px;font-size:0.65rem;background:rgba(124,58,237,0.1);color:var(--accent-light);border:1px solid var(--accent);border-radius:4px;justify-content:center" onclick="openCardDetail('${card.id}')">📦 Spedisci</button>
         </div>
-        ${card.isFresh ? `<button class="btn btn-gold" style="width:100%;margin-top:4px;padding:5px;font-size:0.7rem;justify-content:center;animation:pulse 2s infinite" onclick="openCashOfferModal(${card.id})">⚡ Cash Offer 85%</button>` : ''}
+        ${card.isFresh ? `<button class="btn btn-gold" style="width:100%;margin-top:4px;padding:5px;font-size:0.7rem;justify-content:center;animation:pulse 2s infinite" onclick="openCashOfferModal('${card.id}')">⚡ Cash Offer 85%</button>` : ''}
         ${!card.grade ? `<a href="grading.html" class="btn" style="width:100%;margin-top:4px;padding:5px;font-size:0.65rem;justify-content:center;background:rgba(245,158,11,0.1);color:var(--gold);border:1px solid var(--gold);border-radius:4px;text-decoration:none">🤖 Grada (€20)</a>` : ''}
       </div>
     </div>`;
@@ -278,7 +278,7 @@ function instantSwap(swapId, myCardId) {
 }
 
 function openCardDetail(id) {
-  const card = vaultCards.find(c => c.id === id);
+  const card = vaultCards.find(c => String(c.id) === String(id));
   if (!card) return;
   document.getElementById('cardDetailTitle').textContent = card.name;
 
@@ -348,7 +348,7 @@ function openCardDetail(id) {
     <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:1rem;border:1px solid var(--border)">
       <h4 style="margin-top:0;margin-bottom:10px">📦 Spedizione a Casa</h4>
       <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:10px">La carta è custodita nel caveau a temperatura controllata. Puoi richiedere la spedizione assicurata in qualsiasi momento.</p>
-      <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="shipCard(${card.id})">Richiedi Spedizione Assicurata</button>
+      <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="shipCard('${card.id}')">Richiedi Spedizione Assicurata</button>
     </div>`;
   document.getElementById('cardDetailModal').classList.add('open');
 }
@@ -363,7 +363,7 @@ function shipCard(id) {
 
 // ─── GESTIONE INSERZIONE (MARKETPLACE) ──────────────
 function openSellModal(id) {
-  const card = vaultCards.find(c => c.id === id);
+  const card = vaultCards.find(c => String(c.id) === String(id));
   if (!card) return;
   const types = card.listingTypes || (card.listingType ? [card.listingType] : []);
 
@@ -434,8 +434,8 @@ function openSellModal(id) {
 
     <!-- Bottoni azione -->
     <div style="display:flex;gap:10px">
-      ${card.isListed ? `<button class="btn btn-outline" style="flex:1;justify-content:center;color:#ef4444;border-color:#ef4444;font-size:0.8rem" onclick="removeListing(${card.id})">✕ Rimuovi</button>` : ''}
-      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="confirmListing(${card.id})">${card.isListed ? '✓ Aggiorna' : '🌐 Pubblica Inserzione'}</button>
+      ${card.isListed ? `<button class="btn btn-outline" style="flex:1;justify-content:center;color:#ef4444;border-color:#ef4444;font-size:0.8rem" onclick="removeListing('${card.id}')">✕ Rimuovi</button>` : ''}
+      <button class="btn btn-primary" style="flex:2;justify-content:center" onclick="confirmListing('${card.id}')">${card.isListed ? '✓ Aggiorna' : '🌐 Pubblica Inserzione'}</button>
     </div>
   `;
   document.getElementById('sellModal').classList.add('open');
@@ -452,7 +452,7 @@ function toggleListingSection(sectionId, labelEl) {
 }
 
 function confirmListing(id) {
-  const card = vaultCards.find(c => c.id === id);
+  const card = vaultCards.find(c => String(c.id) === String(id));
   if (!card) return;
 
   const types = [];
@@ -479,7 +479,7 @@ function confirmListing(id) {
 }
 
 function removeListing(id) {
-  const card = vaultCards.find(c => c.id === id);
+  const card = vaultCards.find(c => String(c.id) === String(id));
   if (!card) return;
   card.isListed = false;
   card.listingType = null;
@@ -502,7 +502,7 @@ function sellBulk() {
 // ─── CASH OFFER ───────────────────────────────
 let vaultCoTimer = null;
 function openCashOfferModal(id) {
-  const card = vaultCards.find(c => c.id === id);
+  const card = vaultCards.find(c => String(c.id) === String(id));
   if (!card) return;
   currentCashOfferCardId = id;
   const offer = card.price * 0.85;
@@ -521,7 +521,7 @@ function openCashOfferModal(id) {
 function acceptCashOfferFromVault() {
   if(vaultCoTimer) clearInterval(vaultCoTimer);
   document.getElementById('cashOfferModal').classList.remove('open');
-  const card = vaultCards.find(c => c.id === currentCashOfferCardId);
+  const card = vaultCards.find(c => String(c.id) === String(currentCashOfferCardId));
   const offer = card.price * 0.85;
   window.unwrapWallet += offer;
   if(typeof updateWalletUI === 'function') updateWalletUI();
@@ -538,3 +538,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderCards(vaultCards);
   document.getElementById('statCards').textContent = vaultCards.length;
 });
+
+
+
+

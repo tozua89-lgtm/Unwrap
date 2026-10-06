@@ -2774,3 +2774,61 @@ img { max-width: 100%; }
     display: none !important;
   }
 }
+
+/* ================================================================
+   CASH OFFER WIDGET CSS (Missing in original)
+   ================================================================ */
+.cash-offer-widget {
+  display: none; /* hidden by default */
+  background: var(--bg-card);
+  border: 2px solid var(--gold);
+  border-radius: var(--radius);
+  margin-top: 1rem;
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+}
+.cash-offer-header {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--gold);
+  font-weight: 800;
+  text-align: center;
+  padding: 8px;
+  font-size: 0.9rem;
+}
+.cash-offer-body {
+  padding: 1.25rem;
+  text-align: center;
+}
+
+/* ================================================================
+   LIVE OPENING MOBILE - ULTIMO FIX COMPATTO
+   ================================================================ */
+@media (max-width: 768px) {
+  /* Assicurati che non ci siano height fisse o min-height fastidiose */
+  .live-stream {
+    min-height: auto !important;
+    height: auto !important;
+    padding: 10px !important;
+  }
+  
+  .pack-interaction {
+    margin-top: 10px !important;
+    gap: 10px !important;
+  }
+
+  #packVisual {
+    width: 100px !important;
+    height: 120px !important;
+  }
+
+  #openBtn {
+    padding: 10px !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* La modale di booking su mobile occupi tutto lo schermo se serve */
+  #bookingModal .modal {
+    width: 90% !important;
+    padding: 1.5rem !important;
+  }
+}

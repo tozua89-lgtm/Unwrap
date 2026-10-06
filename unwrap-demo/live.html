@@ -23,7 +23,7 @@
       <div class="wallet-badge" style="cursor:pointer;background:rgba(16,185,129,0.15);border:1px solid var(--green);padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:8px;font-weight:700;margin-right:10px">
         💳 <span class="wallet-amount">€540.00</span>
       </div>
-      <button class="btn btn-primary" onclick="showBookingModal('Prossimo Slot')">📅 Prenota Sessione</button>
+      <button class="btn btn-primary" onclick="openBookingModal()">📅 Prenota Sessione</button>
     </div>
   </div>
 </nav>
@@ -39,7 +39,7 @@
         <div style="font-size:2rem; margin-bottom:0.5rem">📅</div>
         <div style="font-weight:700">Oggi - 18:30</div>
         <div style="font-size:0.8rem; color:var(--text-muted)">Slot Libero</div>
-        <button class="btn btn-primary" style="margin-top:1rem; width:100%; justify-content:center" onclick="confirmBooking()">Prenota</button>
+        <button class="btn btn-primary" style="margin-top:1rem; width:100%; justify-content:center" onclick="openBookingModal()">Prenota</button>
       </div>
       <div style="background:rgba(16,185,129,0.1); border:1px solid var(--green); padding:1rem; border-radius:8px; width:200px">
         <div style="font-size:2rem; margin-bottom:0.5rem">🎥</div>
@@ -72,7 +72,7 @@
         </div>
 
         <!-- CASH OFFER WIDGET (Appare istantaneamente sul pull) -->
-        <div class="cash-offer-widget" id="cashOfferWidget">
+        <div class="cash-offer-widget" id="cashOfferWidget" style="display:none">
           <div class="cash-offer-header">
             ⚡ CASH OFFER IMMEDIATA
           </div>
@@ -121,9 +121,42 @@
   <div class="notif-text" id="notifText"></div>
 </div>
 
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h3 style="margin:0">Seleziona Slot</h3>
+      <button style="background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer" onclick="closeBookingModal()">&times;</button>
+    </div>
+    
+    <div style="text-align:left;margin-bottom:1rem">
+      <label class="form-label">Giorno disponibile</label>
+      <select class="form-input" id="bookingDay">
+        <option>Oggi</option>
+        <option>Domani</option>
+        <option>Dopodomani</option>
+      </select>
+    </div>
+    
+    <div style="text-align:left;margin-bottom:1.5rem">
+      <label class="form-label">Orario</label>
+      <select class="form-input" id="bookingTime">
+        <option>14:00 - 15:00</option>
+        <option>16:30 - 17:30</option>
+        <option>18:30 - 19:30</option>
+        <option>21:00 - 22:00</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:1.1rem" onclick="confirmSlotSelection()">Conferma e Vai in Live</button>
+  </div>
+</div>
+
 <script src="app.js"></script>
 <script src="cards.js"></script>
 <script src="proof-video.js"></script>
 <script src="live.js"></script>
 </body>
 </html>
+
+

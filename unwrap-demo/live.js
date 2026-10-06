@@ -8,8 +8,25 @@ let packCount = 0;
 let currentPulls = [];
 let currentGame = 'Pokémon TCG'; // Default
 
-function confirmBooking() {
-  showNotif('📅 Prenotazione Confermata!', 'Email di conferma inviata.', 'success');
+// ─── BOOKING MODAL ─────────────────────────
+function openBookingModal() {
+  const modal = document.getElementById('bookingModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeBookingModal() {
+  const modal = document.getElementById('bookingModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function confirmSlotSelection() {
+  const day = document.getElementById('bookingDay').value;
+  const time = document.getElementById('bookingTime').value;
+  closeBookingModal();
+  showNotif('📅 Sessione Prenotata!', `Il tuo slot è confermato per ${day} alle ${time}.`, 'success');
+  
+  // Per simulazione, avvia comunque la live così l'utente può provare
+  setTimeout(startLiveSession, 800);
 }
 
 function startLiveSession() {
@@ -107,10 +124,12 @@ async function openPack() {
   const col = rarityColors[highlight.rarity];
 
   resultCard.innerHTML = `
+    <!-- Pulsante Chiudi -->
+    <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;line-height:1" onclick="closeOpenResult()">×</button>
     <!-- Immagine carta: altezza adattiva al viewport -->
-    <div style="height:clamp(160px,30vw,240px);background:${highlight.bg};border-radius:var(--radius);overflow:hidden;margin-bottom:0.75rem;position:relative;padding:0.75rem;display:flex;justify-content:center;align-items:center">
+    <div style="height:clamp(160px,30vw,240px);background:${highlight.bg};border-radius:var(--radius);overflow:hidden;margin-bottom:0.75rem;position:relative;padding:0.75rem;display:flex;justify-content:center;align-items:center;margin-top:10px">
       <img src="${highlight.img}" style="max-height:100%;max-width:100%;object-fit:contain" onerror="this.style.display='none'" />
-      <div style="position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.85);border:1px solid ${col};color:${col};font-size:0.65rem;font-weight:800">${rarityLabels[highlight.rarity]}</div>
+      <div style="position:absolute;bottom:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.85);border:1px solid ${col};color:${col};font-size:0.65rem;font-weight:800">${rarityLabels[highlight.rarity]}</div>
     </div>
     <!-- Info carta -->
     <div class="result-name" style="font-size:clamp(1rem,4vw,1.3rem)">${highlight.name}</div>
@@ -253,3 +272,4 @@ window.addEventListener('DOMContentLoaded', () => {
     startLiveSession();
   }
 });
+
