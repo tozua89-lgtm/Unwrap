@@ -167,9 +167,10 @@ function openCardDetail(id) {
       + (card.grade ? '<div class="vs-row"><span>Grading AI</span><span style="color:var(--gold);font-weight:800">💎 ' + card.grade + '</span></div>' : '')
       + '</div>'
       + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
-      + '<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
-      + '<button class="btn btn-outline" style="flex:1;justify-content:center" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>'
-      + (!card.grade ? '<button class="btn btn-gold" style="flex:1;justify-content:center" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Grading</button>' : '')
+      + '<button class="btn btn-primary" style="flex:1;min-width:45%;justify-content:center" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
+      + '<button class="btn btn-outline" style="flex:1;min-width:45%;justify-content:center" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>'
+      + '<button class="btn btn-outline" style="flex:1;min-width:45%;justify-content:center;color:var(--gold);border-color:var(--gold)" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openCashOfferModal(\'' + card.id + '\')">💸 Vendi a Unwrap (Cash ' + ((card.price||0)*0.85).toFixed(2) + '€)</button>'
+      + (!card.grade ? '<button class="btn btn-gold" style="flex:1;min-width:45%;justify-content:center" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Grading</button>' : '')
       + '</div>';
   }
 
@@ -202,9 +203,10 @@ function openSellCardModal(id) {
     + '</div>'
     + '<div style="margin-bottom:1.2rem">'
     + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:8px">Opzioni di inserzione (seleziona una o pi&ugrave;)</label>'
-    + '<div style="display:flex;gap:6px;flex-wrap:wrap" id="ltypeBtns">'
-    + '<button id="ltype-sale"  class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.75rem" onclick="toggleListingType(\'sale\')">Vendita</button>'
-    + '<button id="ltype-trade" class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.75rem" onclick="toggleListingType(\'trade\')">Scambio</button>'
+    + '<div style="display:flex;flex-direction:column;gap:6px;" id="ltypeBtns">'
+    + '<button id="ltype-sale"  class="btn btn-primary" style="justify-content:center;font-size:0.85rem" onclick="toggleListingType(\'sale\')">💰 Solo Vendita</button>'
+    + '<button id="ltype-trade" class="btn btn-outline" style="justify-content:center;font-size:0.85rem" onclick="toggleListingType(\'trade\')">🔄 Solo Scambio</button>'
+    + '<button id="ltype-mixed" class="btn btn-outline" style="justify-content:center;font-size:0.85rem" onclick="toggleListingType(\'mixed\')">🤝 Scambio + Conguaglio</button>'
     + '</div></div>'
     + '<div id="priceInputDiv" style="margin-bottom:1rem">'
     + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:6px">Prezzo (€)</label>'
@@ -238,13 +240,13 @@ function toggleListingType(type) {
     window._selectedListingTypes.push(type);
   }
 
-  ['sale','trade'].forEach(function(t) {
+  ['sale','trade','mixed'].forEach(function(t) {
     var b = document.getElementById('ltype-' + t);
     if (b) b.className = window._selectedListingTypes.includes(t) ? 'btn btn-primary' : 'btn btn-outline';
   });
 
-  var hasSale = window._selectedListingTypes.includes('sale');
-  var hasTrade = window._selectedListingTypes.includes('trade');
+  var hasSale = window._selectedListingTypes.includes('sale') || window._selectedListingTypes.includes('mixed');
+  var hasTrade = window._selectedListingTypes.includes('trade') || window._selectedListingTypes.includes('mixed');
 
   var pd = document.getElementById('priceInputDiv');
   var sd = document.getElementById('seekingInputDiv');
@@ -255,8 +257,8 @@ function toggleListingType(type) {
 function confirmListCard() {
   var id = window._listingCardId;
   if (!window._selectedListingTypes) window._selectedListingTypes = ['sale'];
-  var hasSale = window._selectedListingTypes.includes('sale');
-  var hasTrade = window._selectedListingTypes.includes('trade');
+  var hasSale = window._selectedListingTypes.includes('sale') || window._selectedListingTypes.includes('mixed');
+  var hasTrade = window._selectedListingTypes.includes('trade') || window._selectedListingTypes.includes('mixed');
   
   var ltype = 'sale';
   if (hasSale && hasTrade) ltype = 'mixed';
@@ -493,6 +495,10 @@ window.addEventListener('DOMContentLoaded', function() {
   filterCards();
   document.getElementById('statCards').textContent = getVaultCards().length;
 });
+
+
+
+
 
 
 
