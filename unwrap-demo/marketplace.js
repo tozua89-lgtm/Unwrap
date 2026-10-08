@@ -1,15 +1,25 @@
-/* =============================================
+﻿/* =============================================
    UNWRAP - Marketplace JS v8
    Interactive Swap Modal & Game Parameters
    ============================================= */
 
 const LISTING_TYPES = ['sale','sale','sale','trade','mixed'];
-const MARKET_LISTINGS = CARD_DB.filter(c => c.owner === 'me').map(c => ({
+// Only 2 base cards from 'me' visible on market by default (the rest unlisted)
+const MARKET_LISTINGS = CARD_DB.filter(c => c.owner === 'me' && c.isListed === true).map(c => ({
   ...c,
-  seller: ['VaultMilano','PokeMaster99','CharizardFan','RomaTCG','Collector99','OnePieceFan','RiftLord'][Math.floor(Math.random()*7)],
+  seller: 'me',
   listingType: LISTING_TYPES[Math.floor(Math.random()*LISTING_TYPES.length)],
   proof: true
 }));
+// Load user's personal listings from localStorage
+try {
+  const myListings = JSON.parse(localStorage.getItem('unwrap_my_listings') || '[]');
+  myListings.forEach(l => {
+    if (!MARKET_LISTINGS.find(m => String(m.id) === String(l.id))) {
+      MARKET_LISTINGS.push(Object.assign({}, l, { seller: 'me' }));
+    }
+  });
+} catch(e) {}
 
 OTHER_VAULTS.forEach(v => v.cards.forEach(c => {
   MARKET_LISTINGS.push({
@@ -17,6 +27,21 @@ OTHER_VAULTS.forEach(v => v.cards.forEach(c => {
     listingType: LISTING_TYPES[Math.floor(Math.random()*LISTING_TYPES.length)]
   });
 }));
+
+// Extra fake listings for testing
+const EXTRA_LISTINGS = [
+  { id: 901, name: 'Mew ex (Full Art)', set: 'Scarlet & Violet 151', rarity: 'secret', price: 85, seller: 'NovaColezioni', listingType: 'sale', proof: true, bg: '#1a0a2e', img: 'https://images.pokemontcg.io/sv3pt5/205_hires.png' },
+  { id: 902, name: 'Mewtwo ex (Full Art)', set: 'Scarlet & Violet 151', rarity: 'ultra', price: 68, seller: 'TradersRoma', listingType: 'trade', proof: true, bg: '#0a1a2e', img: 'https://images.pokemontcg.io/sv3pt5/206_hires.png' },
+  { id: 903, name: 'Charizard ex (SIR)', set: 'Paldean Fates', rarity: 'secret', price: 340, seller: 'VaultMilano', listingType: 'sale', proof: true, bg: '#2e0a00', img: 'https://images.pokemontcg.io/sv4pt5/234_hires.png' },
+  { id: 904, name: 'Pikachu VMAX (Rainbow)', set: 'Vivid Voltage', rarity: 'secret', price: 210, seller: 'PokeMaster99', listingType: 'mixed', proof: true, bg: '#2e2a00', img: 'https://images.pokemontcg.io/swsh4/188_hires.png' },
+  { id: 905, name: 'Gardevoir ex (SAR)', set: 'Scarlet & Violet', rarity: 'ultra', price: 55, seller: 'CharizardFan', listingType: 'sale', proof: true, bg: '#1a0a2e', img: 'https://images.pokemontcg.io/sv1/230_hires.png' },
+  { id: 906, name: 'Lugia VSTAR (Alt Art)', set: 'Silver Tempest', rarity: 'secret', price: 195, seller: 'RomaTCG', listingType: 'trade', proof: true, bg: '#0a1a3e', img: 'https://images.pokemontcg.io/swsh12/211_hires.png' },
+  { id: 907, name: 'Umbreon VMAX (Alt Art)', set: 'Evolving Skies', rarity: 'secret', price: 265, seller: 'NovaColezioni', listingType: 'mixed', proof: true, bg: '#0a0a1e', img: 'https://images.pokemontcg.io/swsh7/215_hires.png' },
+  { id: 908, name: 'Rayquaza VMAX (Alt Art)', set: 'Evolving Skies', rarity: 'ultra', price: 290, seller: 'Collector99', listingType: 'sale', proof: true, bg: '#001a0a', img: 'https://images.pokemontcg.io/swsh7/217_hires.png' },
+];
+EXTRA_LISTINGS.forEach(l => {
+  if (!MARKET_LISTINGS.find(m => m.id === l.id)) MARKET_LISTINGS.push(l);
+});
 
 function setMarketTab(tab) {
   ['store','singles','bulk'].forEach(t => {
@@ -104,12 +129,21 @@ const BADGE_MAP = {
   mixed: '<div class="listing-badge badge-mixed">🤝 Scambio + Conguaglio</div>'
 };
 
+function formatWeight(w) {
+  return w >= 1000 ? (w/1000).toFixed(1) + 'kg' : w + 'g';
+}
+
 function renderMarketGrid(listings) {
   const grid = document.getElementById('mpGrid');
   if (!grid) return;
-  grid.innerHTML = listings.map(card => `
-    <div class="mp-listing">
-      <div class="mp-listing-img" style="background:${card.bg||'#0f0f1a'};position:relative;overflow:hidden;cursor:pointer;padding:8px" onclick="openPurchaseModal(${card.id})">
+  grid.innerHTML = listings.map(card => {
+    const isMine = card.owner === 'me' || card.seller === 'me';
+    const highlightStyle = isMine ? 'border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(124,58,237,0.3);' : '';
+    const sellerName = isMine ? 'Tu' : card.seller;
+    
+    return `
+    <div class="mp-listing" style="${highlightStyle}">
+      <div class="mp-listing-img" style="background:${card.bg||'#0f0f1a'};position:relative;overflow:hidden;cursor:pointer;padding:8px" ${isMine ? '' : `onclick="openPurchaseModal(${card.id})"`}>
         <img src="${card.img}" alt="${card.name}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'" loading="lazy" />
         ${card.rarity ? `<div class="card-item-rarity rarity-${card.rarity}" style="position:absolute;top:4px;right:4px">${card.rarity.toUpperCase()}</div>` : ''}
         ${card.grade ? `<div class="card-item-grade" style="position:absolute;top:4px;left:4px">💎 ${card.grade}</div>` : ''}
@@ -119,20 +153,21 @@ function renderMarketGrid(listings) {
         ${BADGE_MAP[card.listingType] || BADGE_MAP.sale}
         <div class="mp-listing-name">${card.name}</div>
         <div class="mp-listing-set">${card.set || ''} • ${card.game || ''}</div>
-        <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${card.seller}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${sellerName}</div>
         <div class="mp-listing-footer">
           <div class="mp-price">€${card.price.toFixed(2)}</div>
         </div>
         <div class="mp-listing-actions">
-          ${card.listingType !== 'sale' 
-            ? `<button class="btn btn-outline" style="flex:1;justify-content:center;padding:8px" onclick="openSwapModal(${card.id}, '${card.listingType}')">🤝 Proponi</button>`
-            : ''
+          ${isMine ? `<div style="width:100%;text-align:center;padding:8px;font-size:0.8rem;color:var(--accent-light);border:1px solid var(--accent);border-radius:6px">La tua inserzione</div>` :
+            (card.listingType !== 'sale' 
+              ? `<button class="btn btn-outline" style="flex:1;justify-content:center;padding:8px" onclick="openSwapModal(${card.id}, '${card.listingType}')">🤝 Proponi</button>`
+              : '') +
+            `<button class="btn btn-primary" style="flex:1;justify-content:center;padding:8px" onclick="openPurchaseModal(${card.id})">🛒 Acquista</button>`
           }
-          <button class="btn btn-primary" style="flex:1;justify-content:center;padding:8px" onclick="openPurchaseModal(${card.id})">🛒 Acquista</button>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function filterMarket() {
@@ -272,25 +307,31 @@ function renderBulkGrid() {
   
   const allListings = [...listings, ...fakeLots];
   
-  grid.innerHTML = allListings.map(lot => `
-      <div class="mp-listing">
+  grid.innerHTML = allListings.map(lot => {
+    const isMine = lot.seller === 'me';
+    const highlightStyle = isMine ? 'border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(124,58,237,0.3);' : '';
+    const sellerName = isMine ? 'Tu' : lot.seller;
+    
+    return `
+      <div class="mp-listing" style="${highlightStyle}">
         <div class="mp-listing-img" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:3rem;padding:20px">
           📦
         </div>
         <div class="mp-listing-body">
           <div style="font-size:0.6rem;background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.3);padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:8px;font-weight:700">VENDITA LOTTO</div>
           <div class="mp-listing-name">Lotto Bulk (${lot.count} Carte)</div>
-          <div class="mp-listing-set">Peso: ${lot.weight}g</div>
-          <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${lot.seller}</div>
+          <div class="mp-listing-set">Peso: ${formatWeight(lot.weight)}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${sellerName}</div>
           <div class="mp-listing-footer">
             <div class="mp-price">€${parseFloat(lot.price).toFixed(2)}</div>
           </div>
           <div class="mp-listing-actions">
-            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="buyBulkLot('${lot.id}', ${lot.price})">🛒 Acquista</button>
+            ${isMine ? `<div style="width:100%;text-align:center;padding:8px;font-size:0.8rem;color:var(--accent-light);border:1px solid var(--accent);border-radius:6px">La tua inserzione</div>`
+              : `<button class="btn btn-primary" style="width:100%;justify-content:center" onclick="buyBulkLot('${lot.id}', ${lot.price})">🛒 Acquista</button>`}
           </div>
         </div>
       </div>
-  `).join('');
+  `}).join('');
 }
 
 function buyBulkLot(id, price) {
@@ -305,3 +346,6 @@ function buyBulkLot(id, price) {
     } catch(e) {}
   }
 }
+
+
+
