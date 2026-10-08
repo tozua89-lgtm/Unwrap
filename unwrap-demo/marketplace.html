@@ -40,6 +40,7 @@
   <div style="display:flex;gap:0.5rem;margin-bottom:2rem;border-bottom:1px solid var(--border-subtle);padding-bottom:0">
     <button class="filter-tab active" id="tab-store" onclick="setMarketTab('store')">📦 Store Ufficiale (Sigillati)</button>
     <button class="filter-tab" id="tab-singles" onclick="setMarketTab('singles')">🃏 Mercato Utenti (Singole)</button>
+    <button class="filter-tab" id="tab-bulk" onclick="setMarketTab('bulk')">📦 Lotti Bulk</button>
   </div>
 
   <div id="panel-store">
@@ -75,13 +76,24 @@
         <option>Prezzo: Decrescente</option>
       </select>
     </div>
+        
     <div class="mp-grid" id="mpGrid"></div>
   </div>
 
 </div>
 
 <!-- PURCHASE MODAL -->
-<div class="modal-overlay" id="purchaseModal">
+  <div id="panel-bulk" style="display:none">
+    <div style="background:var(--bg-secondary);padding:1.5rem;border-radius:12px;border:1px solid var(--border);margin-bottom:2rem;text-align:center">
+      <h3 style="font-weight:800;font-size:1.2rem;margin-bottom:0.5rem">Lotti Bulk degli Utenti</h3>
+      <p style="color:var(--text-secondary);font-size:0.9rem">Acquista lotti di carte comuni e non comuni dai membri della community.</p>
+    </div>
+    <div class="mp-grid" id="bulkGrid">
+      <!-- Generato via JS -->
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="purchaseModal">
   <div class="modal" style="max-width:500px">
     <div class="modal-header">
       <h3 id="purchaseTitle">Acquista</h3>
@@ -134,4 +146,8 @@
 <script src="marketplace.js"></script>
 </body>
 </html>
+
+
+
+
 

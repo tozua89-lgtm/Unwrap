@@ -1,4 +1,4 @@
-/* =============================================
+﻿/* =============================================
    UNWRAP — Vault JS v9
    Fix Modal height, Offerte, Bulk info, Private vs Listed
    ============================================= */
@@ -490,13 +490,61 @@ function removeListing(id) {
 }
 
 // ─── BULK ─────────────────────────────────────
-function sellBulk() {
-  window.unwrapWallet += 4.15;
-  if(typeof updateWalletUI === 'function') updateWalletUI();
-  document.getElementById('statBulk').textContent = '0';
-  document.getElementById('statBulkWeight').textContent = '0 g';
-  document.getElementById('bulkTitle').innerHTML = 'Il Tuo Bulk: 0 Carte <span style="font-size:1rem;font-weight:400;color:var(--text-muted)">(Valutazione attuale: €0.01 / grammo)</span>';
-  showNotif('Bulk Venduto!', '€4.15 accreditati sul Wallet.', 'success');
+function openSellBulkModal() {
+  const bulk = JSON.parse(localStorage.getItem('unwrap_bulk') || '{"count":415,"weight":747}');
+  document.getElementById('sellBulkMaxCount').textContent = bulk.count + ' Carte';
+  document.getElementById('sellBulkInput').max = bulk.count;
+  document.getElementById('sellBulkInput').value = bulk.count;
+  updateSellBulkPreview();
+  document.getElementById('sellBulkModal').classList.add('open');
+}
+
+function updateSellBulkPreview() {
+  const input = document.getElementById('sellBulkInput');
+  const max = parseInt(input.max) || 0;
+  let val = parseInt(input.value) || 0;
+  if (val > max) { val = max; input.value = max; }
+  if (val < 0) { val = 0; input.value = 0; }
+  
+  const weight = Math.round(val * 1.8);
+  const price = (weight * 0.01).toFixed(2);
+  
+  document.getElementById('sellBulkPreviewWeight').textContent = weight + 'g';
+  document.getElementById('sellBulkPreviewValue').textContent = '€' + price;
+}
+
+function confirmSellBulk() {
+  const input = document.getElementById('sellBulkInput');
+  const val = parseInt(input.value) || 0;
+  if (val <= 0) {
+    showNotif('Errore', 'Inserisci una quantità valida.', '');
+    return;
+  }
+  
+  try {
+    let bulk = JSON.parse(localStorage.getItem('unwrap_bulk') || '{"count":415,"weight":747}');
+    if (val > bulk.count) return;
+    
+    bulk.count -= val;
+    bulk.weight = Math.round(bulk.count * 1.8);
+    bulk.value = (bulk.weight * 0.01).toFixed(2);
+    localStorage.setItem('unwrap_bulk', JSON.stringify(bulk));
+    
+    let listings = JSON.parse(localStorage.getItem('unwrap_bulk_listings') || '[]');
+    listings.push({
+      id: 'bulk_' + Date.now(),
+      count: val,
+      weight: Math.round(val * 1.8),
+      price: (Math.round(val * 1.8) * 0.01).toFixed(2),
+      seller: 'me'
+    });
+    localStorage.setItem('unwrap_bulk_listings', JSON.stringify(listings));
+    
+    syncBulk();
+  } catch(e) {}
+  
+  document.getElementById('sellBulkModal').classList.remove('open');
+  showNotif('In vendita', 'Il tuo Bulk è ora visibile ai privati sul Marketplace!', 'success');
 }
 
 // ─── CASH OFFER ───────────────────────────────
@@ -537,7 +585,7 @@ function acceptCashOfferFromVault() {
   
   filterCards();
   document.getElementById('statCards').textContent = vaultCards.length;
-  showNotif('? Cash Offer Accettata!', '�' + offer.toFixed(2) + ' accreditati nel Wallet.', 'success');
+  showNotif('? Cash Offer Accettata!', '�' + offer.toFixed(2) + ' accreditati nel Wallet.', 'success');
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -547,6 +595,8 @@ window.addEventListener('DOMContentLoaded', () => {
   renderCards(vaultCards);
   document.getElementById('statCards').textContent = vaultCards.length;
 });
+
+
 
 
 

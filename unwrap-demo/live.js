@@ -1,4 +1,4 @@
-/* =============================================
+﻿/* =============================================
    UNWRAP — Live Opening JS v6 (Clean Rewrite)
    ============================================= */
 
@@ -96,7 +96,7 @@ async function openPack() {
   await new Promise(function(r) { setTimeout(r, 1500); });
   packVisual.classList.remove('opening');
 
-  var sequenceLength = 4;
+  var sequenceLength = 9;
   for (var i = 0; i < sequenceLength; i++) {
     var commonCard = commonPool[Math.floor(Math.random() * commonPool.length)];
     packVisual.style.fontSize = '3rem';
@@ -267,4 +267,6 @@ window.addEventListener('DOMContentLoaded', function() {
   if (urlParams.get('game')) currentGame = urlParams.get('game');
   if (urlParams.get('packReady') === 'true') startLiveSession();
 });
+
+
 

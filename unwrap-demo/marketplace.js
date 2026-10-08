@@ -1,5 +1,5 @@
 /* =============================================
-   UNWRAP — Marketplace JS v8
+   UNWRAP - Marketplace JS v8
    Interactive Swap Modal & Game Parameters
    ============================================= */
 
@@ -19,13 +19,13 @@ OTHER_VAULTS.forEach(v => v.cards.forEach(c => {
 }));
 
 function setMarketTab(tab) {
-  ['store','singles'].forEach(t => {
+  ['store','singles','bulk'].forEach(t => {
     document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
     document.getElementById(`panel-${t}`).style.display = t === tab ? 'block' : 'none';
   });
 }
 
-// ─── STORE (SEALED) ───────────────────────────
+// 📦 STORE (SEALED) 📦
 function renderStoreGrid(products) {
   const grid = document.getElementById('storeGrid');
   if (!grid) return;
@@ -74,7 +74,7 @@ function buySealed(id) {
     </div>
 
     <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:1.05rem;padding:12px" onclick="completePurchaseSealed('${prod.id}')">
-      💳 Paga e Vai alla Live
+      ✅ Paga e Vai alla Live
     </button>
   `;
   document.getElementById('purchaseModal').classList.add('open');
@@ -90,19 +90,18 @@ function completePurchaseSealed(id) {
   window.unwrapWallet -= prod.price;
   if(typeof updateWalletUI === 'function') updateWalletUI();
   document.getElementById('purchaseModal').classList.remove('open');
-  showNotif('🎉 Ordine Completato!', `${prod.name} in caricamento...`, 'success');
+  showNotif('📦 Ordine Completato!', `${prod.name} in caricamento...`, 'success');
   
-  // Passiamo il TCG corretto tramite parametro "game"
   setTimeout(() => { 
     window.location.href = `live.html?packReady=true&game=${encodeURIComponent(prod.game)}`; 
   }, 1500);
 }
 
-// ─── SINGLES E SWAP ───────────────────────────
+// 🃏 SINGLES E SWAP 🃏
 const BADGE_MAP = {
-  sale:  '<div class="listing-badge badge-sale">💳 Solo Vendita</div>',
+  sale:  '<div class="listing-badge badge-sale">💰 Solo Vendita</div>',
   trade: '<div class="listing-badge badge-trade">🔄 Valuta Scambio</div>',
-  mixed: '<div class="listing-badge badge-mixed">💰 Scambio + Conguaglio</div>'
+  mixed: '<div class="listing-badge badge-mixed">🤝 Scambio + Conguaglio</div>'
 };
 
 function renderMarketGrid(listings) {
@@ -113,23 +112,23 @@ function renderMarketGrid(listings) {
       <div class="mp-listing-img" style="background:${card.bg||'#0f0f1a'};position:relative;overflow:hidden;cursor:pointer;padding:8px" onclick="openPurchaseModal(${card.id})">
         <img src="${card.img}" alt="${card.name}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'" loading="lazy" />
         ${card.rarity ? `<div class="card-item-rarity rarity-${card.rarity}" style="position:absolute;top:4px;right:4px">${card.rarity.toUpperCase()}</div>` : ''}
-        ${card.grade ? `<div class="card-item-grade" style="position:absolute;top:4px;left:4px">⭐ ${card.grade}</div>` : ''}
-        ${card.proof ? `<div class="proof-badge" style="cursor:pointer;z-index:2" onclick="event.stopPropagation();openProofVideo(${JSON.stringify(card).replace(/"/g,'&quot;')})">▶ PROOF</div>` : ''}
+        ${card.grade ? `<div class="card-item-grade" style="position:absolute;top:4px;left:4px">💎 ${card.grade}</div>` : ''}
+        ${card.proof ? `<div class="proof-badge" style="cursor:pointer;z-index:2" onclick="event.stopPropagation();openProofVideo(${JSON.stringify(card).replace(/"/g,'&quot;')})">🎥 PROOF</div>` : ''}
       </div>
       <div class="mp-listing-body">
         ${BADGE_MAP[card.listingType] || BADGE_MAP.sale}
         <div class="mp-listing-name">${card.name}</div>
-        <div class="mp-listing-set">${card.set || ''} · ${card.game || ''}</div>
+        <div class="mp-listing-set">${card.set || ''} • ${card.game || ''}</div>
         <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${card.seller}</div>
         <div class="mp-listing-footer">
           <div class="mp-price">€${card.price.toFixed(2)}</div>
         </div>
         <div class="mp-listing-actions">
           ${card.listingType !== 'sale' 
-            ? `<button class="btn btn-outline" style="flex:1;justify-content:center;padding:8px" onclick="openSwapModal(${card.id}, '${card.listingType}')">🔄 Proponi</button>`
+            ? `<button class="btn btn-outline" style="flex:1;justify-content:center;padding:8px" onclick="openSwapModal(${card.id}, '${card.listingType}')">🤝 Proponi</button>`
             : ''
           }
-          <button class="btn btn-primary" style="flex:1;justify-content:center;padding:8px" onclick="openPurchaseModal(${card.id})">💳 Acquista</button>
+          <button class="btn btn-primary" style="flex:1;justify-content:center;padding:8px" onclick="openPurchaseModal(${card.id})">🛒 Acquista</button>
         </div>
       </div>
     </div>
@@ -143,7 +142,6 @@ function filterMarket() {
   const listingType = document.getElementById('mpListingType')?.value || '';
   
   let filtered = MARKET_LISTINGS.filter(c => {
-    // Escludi le carte del Vault che sono ancora impostate come Private
     if (c.owner === 'me' && !c.isListed) return false;
     
     const matchQ = !q || c.name.toLowerCase().includes(q) || (c.set||'').toLowerCase().includes(q);
@@ -160,7 +158,7 @@ function filterMarket() {
 function openPurchaseModal(id) {
   const card = MARKET_LISTINGS.find(c => c.id === id);
   if (!card) return;
-  const comm = card.price * 0.04;
+  const comm = card.price * 0.05;
   document.getElementById('purchaseTitle').textContent = 'Dettaglio Inserzione';
   document.getElementById('purchaseBody').innerHTML = `
     <div style="height:260px;background:${card.bg||'#0f0f1a'};border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;padding:1rem;display:flex;justify-content:center">
@@ -169,12 +167,12 @@ function openPurchaseModal(id) {
     <div style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.5rem">
       <div class="vs-row"><span>Carta</span><span style="font-weight:700">${card.name}</span></div>
       <div class="vs-row"><span>Venditore</span><span>@${card.seller}</span></div>
-      <div class="vs-row"><span>Proof of Pull</span><span style="color:var(--accent-light);cursor:pointer" onclick='openProofVideo(${JSON.stringify(card).replace(/"/g,"&apos;")})'>▶ Guarda Video 4K</span></div>
-      ${card.grade ? `<div class="vs-row"><span>Grading</span><span style="color:var(--gold)">⭐ ${card.grade}</span></div>` : ''}
+      <div class="vs-row"><span>Proof of Pull</span><span style="color:var(--accent-light);cursor:pointer" onclick='openProofVideo(${JSON.stringify(card).replace(/"/g,"&apos;")})'>🎥 Guarda Video 4K</span></div>
+      ${card.grade ? `<div class="vs-row"><span>Grading</span><span style="color:var(--gold)">💎 ${card.grade}</span></div>` : ''}
       <div class="vs-row"><span>Prezzo</span><span style="font-size:1.2rem;font-weight:900;color:var(--green)">€${card.price.toFixed(2)}</span></div>
-      <div class="vs-row"><span>Commissione (4%)</span><span style="color:var(--text-muted)">€${comm.toFixed(2)}</span></div>
+      <div class="vs-row"><span>Commissione Unwrap (5%)</span><span style="color:var(--text-muted)">€${comm.toFixed(2)}</span></div>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="completePurchaseCard(${card.id})">💳 Paga e Trasferisci al tuo Vault</button>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="completePurchaseCard(${card.id})">✅ Paga e Trasferisci al tuo Vault</button>
   `;
   document.getElementById('purchaseModal').classList.add('open');
 }
@@ -182,17 +180,17 @@ function openPurchaseModal(id) {
 function completePurchaseCard(id) {
   const card = MARKET_LISTINGS.find(c => c.id === id);
   if(!card) return;
-  const total = card.price * 1.04;
+  const total = card.price * 1.05;
   if (window.unwrapWallet < total) {
     showNotif('❌ Fondi Insufficienti', 'Ricarica il tuo Wallet.', ''); return;
   }
   window.unwrapWallet -= total;
   if(typeof updateWalletUI === 'function') updateWalletUI();
   document.getElementById('purchaseModal').classList.remove('open');
-  showNotif('🎉 Transazione Completata!', `${card.name} è ora nel tuo Vault.`, 'success');
+  showNotif('✅ Transazione Completata!', `${card.name} è ora nel tuo Vault.`, 'success');
 }
 
-// ─── SWAP PROPOSAL LOGIC ──────────────────────
+// 🔄 SWAP PROPOSAL LOGIC 🔄
 let currentSwapTarget = null;
 let currentSwapSelectedMyCard = null;
 
@@ -247,14 +245,63 @@ function confirmSwapProposal() {
     return;
   }
   document.getElementById('swapProposalModal').classList.remove('open');
-  showNotif('🔄 Proposta Inviata', `La tua proposta di scambio è stata inviata a @${currentSwapTarget.seller}. Riceverai una notifica se accetta.`, 'success');
+  showNotif('✅ Proposta Inviata', `La tua proposta di scambio è stata inviata a @${currentSwapTarget.seller}. Riceverai una notifica se accetta.`, 'success');
 }
 
-// ─── INIT ─────────────────────────────────────
+// --- INIT ---
 window.addEventListener('DOMContentLoaded', () => {
   if(typeof updateWalletUI === 'function') updateWalletUI();
   renderStoreGrid(SEALED_PRODUCTS);
   renderMarketGrid(MARKET_LISTINGS);
+  if(typeof renderBulkGrid === 'function') renderBulkGrid();
 });
 
+function renderBulkGrid() {
+  const grid = document.getElementById('bulkGrid');
+  if (!grid) return;
+  
+  let listings = [];
+  try {
+    listings = JSON.parse(localStorage.getItem('unwrap_bulk_listings') || '[]');
+  } catch(e) {}
+  
+  const fakeLots = [
+    { id: 'fake_1', count: 1250, weight: 2250, price: 22.50, seller: 'PokeMaster99' },
+    { id: 'fake_2', count: 500, weight: 900, price: 9.00, seller: 'CharizardFan' }
+  ];
+  
+  const allListings = [...listings, ...fakeLots];
+  
+  grid.innerHTML = allListings.map(lot => `
+      <div class="mp-listing">
+        <div class="mp-listing-img" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-size:3rem;padding:20px">
+          📦
+        </div>
+        <div class="mp-listing-body">
+          <div style="font-size:0.6rem;background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.3);padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:8px;font-weight:700">VENDITA LOTTO</div>
+          <div class="mp-listing-name">Lotto Bulk (${lot.count} Carte)</div>
+          <div class="mp-listing-set">Peso: ${lot.weight}g</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Venditore: @${lot.seller}</div>
+          <div class="mp-listing-footer">
+            <div class="mp-price">€${parseFloat(lot.price).toFixed(2)}</div>
+          </div>
+          <div class="mp-listing-actions">
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="buyBulkLot('${lot.id}', ${lot.price})">🛒 Acquista</button>
+          </div>
+        </div>
+      </div>
+  `).join('');
+}
 
+function buyBulkLot(id, price) {
+  showNotif('Acquisto effettuato!', 'Lotto Bulk acquistato per €' + parseFloat(price).toFixed(2), 'success');
+  
+  if (id.startsWith('bulk_')) {
+    try {
+      let listings = JSON.parse(localStorage.getItem('unwrap_bulk_listings') || '[]');
+      listings = listings.filter(l => l.id !== id);
+      localStorage.setItem('unwrap_bulk_listings', JSON.stringify(listings));
+      renderBulkGrid();
+    } catch(e) {}
+  }
+}
