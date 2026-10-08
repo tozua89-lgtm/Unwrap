@@ -1,4 +1,4 @@
-/* =============================================
+﻿/* =============================================
    UNWRAP - Vault JS v10 (Clean Rewrite)
    ============================================= */
 
@@ -110,7 +110,7 @@ function renderCards(cards) {
       + '    </div>'
       + '    <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'
       + '      <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.7rem;padding:6px 8px" onclick="event.stopPropagation();openSellCardModal(\'' + card.id + '\')">'
-      + (card.isListed ? '🚫 Ritira' : '🏷️ Vendi')
+      + (card.isListed ? '🚫 Ritira' : '🏷️ Vendi / Scambia')
       + '      </button>'
       + '    </div>'
       + '  </div>'
@@ -168,7 +168,7 @@ function openCardDetail(id) {
       + '</div>'
       + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
       + '<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
-      + '<button class="btn btn-outline" style="flex:1;justify-content:center" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi</button>'
+      + '<button class="btn btn-outline" style="flex:1;justify-content:center" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>'
       + (!card.grade ? '<button class="btn btn-gold" style="flex:1;justify-content:center" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Grading</button>' : '')
       + '</div>';
   }
@@ -178,74 +178,112 @@ function openCardDetail(id) {
 }
 
 // ─── SELL CARD MODAL ──────────────────────────────────────────────────────────
+// --- SELL CARD MODAL ---
 function openSellCardModal(id) {
   vaultCards = getVaultCards();
   var card = vaultCards.find(function(c) { return String(c.id) === String(id); });
   if (!card) return;
 
-  // Toggle: if already listed, delist
-  if (card.isListed) {
-    delistCard(id);
-    return;
-  }
+  if (card.isListed) { delistCard(id); return; }
+
+  window._selectedListingTypes = ['sale'];
+  window._listingCardId = id;
+
+  var imgHTML = card.img ? '<img src="' + card.img + '" style="width:100%;height:100%;object-fit:contain">' : '<span>' + (card.emoji || String.fromCodePoint(0x1F0CF)) + '</span>';
+  var cardBg  = card.bg || card.color || '#1a1a2e';
+  var cardSet = card.set || '';
+  var cardPrice = card.price || 0;
 
   var body = document.getElementById('sellModalBody');
-  if (body) {
-    body.innerHTML = ''
-      + '<div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">'
-      + '<div style="width:50px;height:70px;background:' + (card.bg || card.color || '#1a1a2e') + ';border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden">'
-      + (card.img ? '<img src="' + card.img + '" style="width:100%;height:100%;object-fit:contain">' : '<span>' + (card.emoji || '🃏') + '</span>')
-      + '</div>'
-      + '<div><div style="font-weight:700">' + card.name + '</div><div style="font-size:0.8rem;color:var(--text-muted)">' + (card.set || '') + '</div></div>'
-      + '</div>'
-      + '<div style="margin-bottom:1rem">'
-      + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:6px">Prezzo di vendita (&euro;)</label>'
-      + '<input type="number" id="sellPriceInput" value="' + (card.price || 0) + '" min="1" step="0.50" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;color:#fff;font-size:1.1rem">'
-      + '</div>'
-      + '<div style="background:rgba(245,158,11,0.1);border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem">'
-      + '⚠️ Unwrap trattiene il <strong>5%</strong> su ogni transazione tra privati come commissione di piattaforma.'
-      + '</div>'
-      + '<div style="display:flex;gap:8px">'
-      + '<button class="btn btn-outline" style="flex:1;justify-content:center" onclick="document.getElementById(\'sellModal\').classList.remove(\'open\')">Annulla</button>'
-      + '<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="confirmListCard(\'' + card.id + '\')">✅ Metti in Vendita</button>'
-      + '</div>';
-  }
+  if (!body) return;
+  body.innerHTML = '<div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem">'
+    + '<div style="width:50px;height:70px;background:' + cardBg + ';border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center">' + imgHTML + '</div>'
+    + '<div><div style="font-weight:700">' + card.name + '</div><div style="font-size:0.8rem;color:var(--text-muted)">' + cardSet + '</div></div>'
+    + '</div>'
+    + '<div style="margin-bottom:1.2rem">'
+    + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:8px">Opzioni di inserzione (seleziona una o pi&ugrave;)</label>'
+    + '<div style="display:flex;gap:6px;flex-wrap:wrap" id="ltypeBtns">'
+    + '<button id="ltype-sale"  class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.75rem" onclick="toggleListingType(\'sale\')">Vendita</button>'
+    + '<button id="ltype-trade" class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.75rem" onclick="toggleListingType(\'trade\')">Scambio</button>'
+    + '</div></div>'
+    + '<div id="priceInputDiv" style="margin-bottom:1rem">'
+    + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:6px">Prezzo (€)</label>'
+    + '<input type="number" id="sellPriceInput" value="' + cardPrice + '" min="1" step="0.50" style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;color:#fff;font-size:1.1rem">'
+    + '</div>'
+    + '<div id="seekingInputDiv" style="margin-bottom:1rem;display:none">'
+    + '<label style="font-size:0.85rem;color:var(--text-muted);display:block;margin-bottom:6px">Cosa cerchi? (facoltativo)</label>'
+    + '<input type="text" id="sellSeekingInput" placeholder="es. Charizard ex, Pikachu VMAX..." style="width:100%;padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;color:#fff">'
+    + '</div>'
+    + '<div style="background:rgba(245,158,11,0.1);border:1px solid var(--gold);border-radius:8px;padding:10px;font-size:0.8rem;color:var(--text-secondary);margin-bottom:1rem">'
+    + 'Unwrap trattiene il <strong>5%</strong> sulle transazioni monetarie tra privati.'
+    + '</div>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button class="btn btn-outline" style="flex:1;justify-content:center" onclick="document.getElementById(\'sellModal\').classList.remove(\'open\')">Annulla</button>'
+    + '<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="confirmListCard()">Inserisci</button>'
+    + '</div>';
 
   document.getElementById('sellModal').classList.add('open');
 }
 
-function confirmListCard(id) {
-  var priceInput = document.getElementById('sellPriceInput');
-  var price = parseFloat(priceInput ? priceInput.value : 0);
-  if (!price || price <= 0) { showNotif('Errore', 'Inserisci un prezzo valido.', ''); return; }
+function toggleListingType(type) {
+  if (!window._selectedListingTypes) window._selectedListingTypes = ['sale'];
+  
+  var idx = window._selectedListingTypes.indexOf(type);
+  if (idx > -1) {
+    // Prevent unselecting the last option
+    if (window._selectedListingTypes.length > 1) {
+      window._selectedListingTypes.splice(idx, 1);
+    }
+  } else {
+    window._selectedListingTypes.push(type);
+  }
 
-  // Save to localStorage as a marketplace listing
+  ['sale','trade'].forEach(function(t) {
+    var b = document.getElementById('ltype-' + t);
+    if (b) b.className = window._selectedListingTypes.includes(t) ? 'btn btn-primary' : 'btn btn-outline';
+  });
+
+  var hasSale = window._selectedListingTypes.includes('sale');
+  var hasTrade = window._selectedListingTypes.includes('trade');
+
+  var pd = document.getElementById('priceInputDiv');
+  var sd = document.getElementById('seekingInputDiv');
+  if (pd) pd.style.display = hasSale ? 'block' : 'none';
+  if (sd) sd.style.display = hasTrade ? 'block' : 'none';
+}
+
+function confirmListCard() {
+  var id = window._listingCardId;
+  if (!window._selectedListingTypes) window._selectedListingTypes = ['sale'];
+  var hasSale = window._selectedListingTypes.includes('sale');
+  var hasTrade = window._selectedListingTypes.includes('trade');
+  
+  var ltype = 'sale';
+  if (hasSale && hasTrade) ltype = 'mixed';
+  else if (hasTrade) ltype = 'trade';
+
+  var price = parseFloat(document.getElementById('sellPriceInput') ? document.getElementById('sellPriceInput').value : 0) || 0;
+  var seeking = document.getElementById('sellSeekingInput') ? document.getElementById('sellSeekingInput').value : '';
+
+  if (hasSale && price <= 0) { showNotif('Errore', 'Inserisci un prezzo valido.', ''); return; }
+
   try {
     var listings = JSON.parse(localStorage.getItem('unwrap_my_listings') || '[]');
     listings = listings.filter(function(l) { return String(l.id) !== String(id); });
     vaultCards = getVaultCards();
     var card = vaultCards.find(function(c) { return String(c.id) === String(id); });
     if (card) {
-      card.isListed = true;
-      card.price = price;
-      listings.push(Object.assign({}, card, { isListed: true, price: price, seller: 'me', listingType: 'sale', proof: true }));
+      listings.push(Object.assign({}, card, { isListed: true, price: price, seller: 'me', listingType: ltype, seeking: seeking, proof: true }));
     }
     localStorage.setItem('unwrap_my_listings', JSON.stringify(listings));
-
-    // Also update pulled cards if it's a pulled card
-    try {
-      var pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
-      var idx = pulled.findIndex(function(c) { return String(c.id) === String(id); });
-      if (idx !== -1) {
-        pulled[idx].isListed = true;
-        pulled[idx].price = price;
-        localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
-      }
-    } catch(e2) {}
+    var pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    var idx = pulled.findIndex(function(c) { return String(c.id) === String(id); });
+    if (idx !== -1) { pulled[idx].isListed = true; pulled[idx].price = price; pulled[idx].listingType = ltype; localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled)); }
   } catch(e) {}
 
   document.getElementById('sellModal').classList.remove('open');
-  showNotif('🏷️ In Vendita!', 'La carta è ora visibile nel Marketplace.', 'success');
+  var lbl = { sale: 'Solo Vendita', trade: 'Solo Scambio', mixed: 'Scambio + Cash' };
+  showNotif('Inserzione Pubblicata!', 'Visibile nel Marketplace - ' + (lbl[ltype] || ltype), 'success');
   filterCards();
 }
 
@@ -455,3 +493,10 @@ window.addEventListener('DOMContentLoaded', function() {
   filterCards();
   document.getElementById('statCards').textContent = getVaultCards().length;
 });
+
+
+
+
+
+
+
