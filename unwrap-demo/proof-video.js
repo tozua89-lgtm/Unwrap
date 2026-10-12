@@ -40,24 +40,31 @@ let proofAnimId;
 let proofCardObj = null;
 
 function openProofVideo(cardObj) {
+  if (!cardObj) return;
   proofCardObj = cardObj;
-  document.getElementById('proofCardName').textContent = cardObj.name;
-  document.getElementById('proofVideoModal').classList.add('open');
-  startCanvasSequence(cardObj);
+  var nameEl = document.getElementById('proofCardName');
+  if (nameEl) nameEl.textContent = cardObj.name;
+  var modal = document.getElementById('proofVideoModal');
+  if (modal) modal.classList.add('open');
+  // Breve delay per assicurare che il canvas abbia dimensioni nel DOM visibile
+  setTimeout(function() {
+    startCanvasSequence(cardObj);
+  }, 50);
 }
 
 function closeProofVideo() {
-  document.getElementById('proofVideoModal').classList.remove('open');
-  if(proofAnimId) cancelAnimationFrame(proofAnimId);
+  var modal = document.getElementById('proofVideoModal');
+  if (modal) modal.classList.remove('open');
+  if (proofAnimId) cancelAnimationFrame(proofAnimId);
 }
 
 function startCanvasSequence(card) {
   const canvas = document.getElementById('proofCanvas');
-  if(!canvas) return;
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
+  canvas.width = canvas.clientWidth || 800;
+  canvas.height = canvas.clientHeight || 450;
 
   const w = canvas.width;
   const h = canvas.height;

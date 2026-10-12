@@ -80,6 +80,18 @@ function getVaultCards() {
     });
   } catch(e) {}
 
+  // Applica le carte gradate AI da localStorage
+  try {
+    var graded = JSON.parse(localStorage.getItem('unwrap_graded') || '{}');
+    base.forEach(function(card) {
+      if (graded[card.id]) {
+        card.grade = graded[card.id].grade;
+        card.gradeData = graded[card.id];
+      }
+    });
+  } catch(e) {}
+
+  // Applica lo stato di inserzione dal Marketplace
   try {
     var listings = JSON.parse(localStorage.getItem('unwrap_my_listings') || '[]');
     base.forEach(function(card) {
@@ -98,6 +110,51 @@ function getVaultCards() {
   return base;
 }
 
+function renderCardItemHTML(card) {
+  var isMkt = !!card.isListed;
+  var statusBadge = '';
+  if (isMkt) {
+    var typeText = card.listingType === 'trade' ? '🔄 IN SCAMBIO' : (card.listingType === 'mixed' ? '🤝 SCAMBIO+CASH' : '🛒 IN VETRINA');
+    statusBadge = '<div style="position:absolute;top:6px;left:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:0.58rem;font-weight:800;padding:3px 7px;border-radius:4px;box-shadow:0 2px 8px rgba(124,58,237,0.5);letter-spacing:0.04em;z-index:2">' + typeText + '</div>';
+  } else {
+    statusBadge = '<div style="position:absolute;top:6px;left:6px;background:rgba(15,23,42,0.85);color:#94a3b8;font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);letter-spacing:0.04em;z-index:2">🔒 PRIVATO</div>';
+  }
+
+  var img = card.img
+    ? '<img src="' + card.img + '" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display=\'none\'">'
+    : '<span style="font-size:3rem">' + (card.emoji || '🃏') + '</span>';
+
+  var cardBorder = isMkt ? 'border:1.5px solid var(--accent);box-shadow:0 0 15px rgba(124,58,237,0.25);' : '';
+
+  var actionBtn = isMkt
+    ? '<button class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px;border-color:rgba(239,68,68,0.5);color:#ef4444" onclick="event.stopPropagation();delistCard(\'' + card.id + '\')">🚫 Ritira dal Market</button>'
+    : '<button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px" onclick="event.stopPropagation();openSellCardModal(\'' + card.id + '\')">🏷️ Metti in Vetrina</button>';
+
+  var proofBadge = card.proof
+    ? '<div class="proof-badge" style="cursor:pointer" title="Guarda Demo Sbustamento 4K" onclick="event.stopPropagation();openProofVideo(vaultCards.find(function(c){return String(c.id)===String(\'' + card.id + '\');}))">🎥 PROOF</div>'
+    : '';
+
+  return '<div class="card-item" style="' + cardBorder + '" onclick="openCardDetail(\'' + card.id + '\')">'
+    + '  <div class="card-item-img" style="background:' + (card.bg || card.color || '#1a1a2e') + ';position:relative">'
+    + '    ' + img
+    + '    <div class="card-item-rarity rarity-' + card.rarity + '">' + card.rarity.toUpperCase() + '</div>'
+    + proofBadge
+    + statusBadge
+    + '  </div>'
+    + '  <div class="card-item-info">'
+    + '    <div class="card-item-name">' + card.name + '</div>'
+    + '    <div class="card-item-set">' + (card.set || '') + (card.number ? ' #' + card.number : '') + '</div>'
+    + '    <div class="card-item-footer">'
+    + '      <div class="card-item-price">&euro;' + (card.price || 0) + '</div>'
+    + (card.grade ? '<div class="card-item-grade">💎 ' + card.grade + '</div>' : '')
+    + '    </div>'
+    + '    <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'
+    + actionBtn
+    + '    </div>'
+    + '  </div>'
+    + '</div>';
+}
+
 function renderCards(cards) {
   var grid = document.getElementById('cardsGrid');
   if (!grid) return;
@@ -107,47 +164,42 @@ function renderCards(cards) {
     return;
   }
 
-  grid.innerHTML = cards.map(function(card) {
-    var isMkt = !!card.isListed;
-    var statusBadge = '';
-    if (isMkt) {
-      var typeText = card.listingType === 'trade' ? '🔄 IN SCAMBIO' : (card.listingType === 'mixed' ? '🤝 SCAMBIO+CASH' : '🛒 IN VENDITA');
-      statusBadge = '<div style="position:absolute;top:6px;left:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:0.58rem;font-weight:800;padding:3px 7px;border-radius:4px;box-shadow:0 2px 8px rgba(124,58,237,0.5);letter-spacing:0.04em;z-index:2">' + typeText + '</div>';
-    } else {
-      statusBadge = '<div style="position:absolute;top:6px;left:6px;background:rgba(15,23,42,0.85);color:#94a3b8;font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);letter-spacing:0.04em;z-index:2">🔒 PRIVATO</div>';
+  var marketCards  = cards.filter(function(c) { return !!c.isListed; });
+  var privateCards = cards.filter(function(c) { return !c.isListed; });
+
+  var html = '';
+
+  if (activeFilter === 'all') {
+    if (marketCards.length > 0) {
+      html += '<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg, rgba(124,58,237,0.18), rgba(124,58,237,0.03));border-left:4px solid var(--accent);padding:10px 14px;border-radius:6px;margin:0.2rem 0 0.8rem">'
+        + '<div style="display:flex;align-items:center;gap:8px">'
+        + '<span style="font-weight:900;font-size:0.9rem;color:#fff">🛒 IN VETRINA SUL MARKETPLACE</span>'
+        + '<span style="background:var(--accent);color:#fff;font-size:0.7rem;font-weight:800;padding:2px 7px;border-radius:10px">' + marketCards.length + '</span>'
+        + '</div>'
+        + '<span style="font-size:0.75rem;color:var(--text-muted)">In vendita o scambio visibili sul Marketplace</span>'
+        + '</div>';
+      html += marketCards.map(renderCardItemHTML).join('');
     }
 
-    var img = card.img
-      ? '<img src="' + card.img + '" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display=\'none\'">'
-      : '<span style="font-size:3rem">' + (card.emoji || '🃏') + '</span>';
+    if (privateCards.length > 0) {
+      html += '<div style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(90deg, rgba(255,255,255,0.06), transparent);border-left:4px solid rgba(255,255,255,0.3);padding:10px 14px;border-radius:6px;margin:' + (marketCards.length > 0 ? '2rem 0 0.8rem' : '0.2rem 0 0.8rem') + '">'
+        + '<div style="display:flex;align-items:center;gap:8px">'
+        + '<span style="font-weight:900;font-size:0.9rem;color:#fff">🔒 VAULT PERSONALE (PRIVATE)</span>'
+        + '<span style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.7rem;font-weight:800;padding:2px 7px;border-radius:10px">' + privateCards.length + '</span>'
+        + '</div>'
+        + '<span style="font-size:0.75rem;color:var(--text-muted)">Carte personali custodite nel caveau</span>'
+        + '</div>';
+      html += privateCards.map(renderCardItemHTML).join('');
+    }
+  } else {
+    // Filtro specifico: ordina comunque mostrando prima quelle in vetrina se presenti
+    var sorted = cards.slice().sort(function(a, b) {
+      return (b.isListed ? 1 : 0) - (a.isListed ? 1 : 0);
+    });
+    html = sorted.map(renderCardItemHTML).join('');
+  }
 
-    var cardBorder = isMkt ? 'border:1.5px solid var(--accent);box-shadow:0 0 15px rgba(124,58,237,0.25);' : '';
-
-    var actionBtn = isMkt
-      ? '<button class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px;border-color:rgba(239,68,68,0.5);color:#ef4444" onclick="event.stopPropagation();delistCard(\'' + card.id + '\')">🚫 Ritira dal Market</button>'
-      : '<button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px" onclick="event.stopPropagation();openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>';
-
-    return '<div class="card-item" style="' + cardBorder + '" onclick="openCardDetail(\'' + card.id + '\')">'
-      + '  <div class="card-item-img" style="background:' + (card.bg || card.color || '#1a1a2e') + ';position:relative">'
-      + '    ' + img
-      + '    <div class="card-item-rarity rarity-' + card.rarity + '">' + card.rarity.toUpperCase() + '</div>'
-      + (card.proof ? '<div class="proof-badge">🎥 PROOF</div>' : '')
-      + statusBadge
-      + '  </div>'
-      + '  <div class="card-item-info">'
-      + '    <div class="card-item-name">' + card.name + '</div>'
-      + '    <div class="card-item-set">' + (card.set || '') + (card.number ? ' #' + card.number : '') + '</div>'
-      + '    <div class="card-item-footer">'
-      + '      <div class="card-item-price">&euro;' + (card.price || 0) + '</div>'
-      + (card.grade ? '<div class="card-item-grade">💎 ' + card.grade + '</div>' : '')
-      + '    </div>'
-      + '    <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'
-      + actionBtn
-      + '    </div>'
-      + '  </div>'
-      + '</div>';
-  }).join('');
-
+  grid.innerHTML = html;
   document.getElementById('statCards').textContent = cards.length;
 }
 
@@ -201,12 +253,12 @@ function openCardDetail(id) {
 
     var isMkt = !!card.isListed;
     var statusText = isMkt
-      ? '<span style="color:var(--accent-light);font-weight:700">🛒 Sul Marketplace (' + (card.listingType === 'trade' ? 'Solo Scambio' : card.listingType === 'mixed' ? 'Scambio + Cash' : 'In Vendita a €' + card.price) + ')</span>'
+      ? '<span style="color:var(--accent-light);font-weight:700">🛒 In Vetrina sul Marketplace (' + (card.listingType === 'trade' ? 'Solo Scambio' : card.listingType === 'mixed' ? 'Scambio + Cash' : 'In Vendita a €' + card.price) + ')</span>'
       : '<span style="color:var(--text-muted);font-weight:700">🔒 Vault Privato (Personale, non in commercio)</span>';
 
     var primaryMarketBtn = isMkt
       ? '<button class="btn btn-outline" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem;border-color:rgba(239,68,68,0.6);color:#ef4444" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');delistCard(\'' + card.id + '\')">🚫 Ritira dal Market</button>'
-      : '<button class="btn btn-primary" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>';
+      : '<button class="btn btn-primary" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Metti in Vetrina</button>';
 
     var cashVal = ((card.price || 0) * 0.85).toFixed(2);
 
@@ -224,13 +276,15 @@ function openCardDetail(id) {
       + '</div>'
       + '<div style="display:flex;flex-direction:column;gap:0.6rem">'
       + '  <div style="display:flex;gap:0.5rem">'
-      + '    <button class="btn btn-outline" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
+      + '    <button class="btn btn-outline" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openProofVideo(vaultCards.find(function(c){return String(c.id)===String(\'' + card.id + '\');}))">🎥 Guarda Demo Sbustamento</button>'
       +      primaryMarketBtn
       + '  </div>'
       + '  <button class="btn btn-gold" style="width:100%;justify-content:center;padding:12px;font-size:0.92rem;font-weight:800;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(245,158,11,0.25)" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openCashOfferModal(\'' + card.id + '\')">'
       + '    ⚡ Vendi Subito a Unwrap: &euro;' + cashVal + ' (Cash 85%)'
       + '  </button>'
-      +    (!card.grade ? '<button class="btn btn-outline" style="width:100%;justify-content:center;font-size:0.8rem;padding:8px;border-color:rgba(255,255,255,0.2);color:var(--text-secondary)" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Richiedi Grading AI</button>' : '')
+      +    (!card.grade
+            ? '<button class="btn btn-outline" style="width:100%;justify-content:center;font-size:0.85rem;padding:9px;border-color:rgba(124,58,237,0.4);color:var(--accent-light);font-weight:700" onclick="window.location.href=\'grading.html?cardId=' + encodeURIComponent(card.id) + '\'">💎 Grada Carta con AI (€20)</button>'
+            : '<button class="btn btn-gold" style="width:100%;justify-content:center;font-size:0.85rem;padding:9px;background:rgba(245,158,11,0.15);border-color:var(--gold);color:var(--gold);font-weight:800" onclick="window.location.href=\'grading.html\'">💎 Certificato AI: Voto ' + card.grade + ' (Vedi Slab)</button>')
       + '</div>';
   }
 

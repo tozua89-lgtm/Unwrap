@@ -7,6 +7,30 @@ let selectedCardToGrade = null;
 
 const GRADING_COST = 20.00;
 
+function getGradingVaultCards() {
+  const base = CARD_DB.filter(c => c.owner === 'me').map(c => Object.assign({}, c));
+  try {
+    const pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    pulled.forEach(p => {
+      const idx = base.findIndex(b => String(b.id) === String(p.id));
+      if (idx === -1) base.unshift(Object.assign({}, p));
+      else base[idx] = Object.assign({}, base[idx], p);
+    });
+  } catch(e) {}
+
+  try {
+    const graded = JSON.parse(localStorage.getItem('unwrap_graded') || '{}');
+    base.forEach(card => {
+      if (graded[card.id]) {
+        card.grade = graded[card.id].grade;
+        card.gradeData = graded[card.id];
+      }
+    });
+  } catch(e) {}
+
+  return base;
+}
+
 function selectService(svc) {
   selectedService = svc;
   document.getElementById('stepService').style.display = 'none';
@@ -30,7 +54,8 @@ function selectService(svc) {
 function renderCardSelection(isRouting) {
   const grid = document.getElementById('vaultSelectGrid');
   if(!grid) return;
-  const ungraded = CARD_DB.filter(c => c.owner === 'me' && !c.grade);
+  const allVault = getGradingVaultCards();
+  const ungraded = allVault.filter(c => !c.grade);
   if (ungraded.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">Tutte le carte del tuo Vault sono già gradate!</div>`;
     return;
@@ -38,7 +63,7 @@ function renderCardSelection(isRouting) {
   grid.innerHTML = ungraded.map(card => `
     <div class="card-item" style="cursor:pointer;border:2px solid transparent;transition:all 0.2s"
       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='transparent'"
-      onclick="${isRouting ? `openRoutingOptions(${card.id})` : `startGrading(${card.id})`}">
+      onclick="${isRouting ? `openRoutingOptions('${card.id}')` : `startGrading('${card.id}')`}">
       <div class="card-item-img" style="background:${card.bg||'#0f0f1a'};height:180px;padding:10px">
         <img src="${card.img}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'">
       </div>
@@ -54,7 +79,8 @@ function renderCardSelection(isRouting) {
 }
 
 function openRoutingOptions(cardId) {
-  const card = CARD_DB.find(c => c.id === cardId);
+  const card = getGradingVaultCards().find(c => String(c.id) === String(cardId));
+  if (!card) return;
   const label = selectedService === 'psa' ? 'PSA' : 'BGS';
   
   // Apriamo la modale di routing options (che creiamo in grading.html o iniettiamo dinamicamente qui)
@@ -122,7 +148,7 @@ function confirmRouting(label, cardId) {
 
 // ─── UNWRAP AI GRADING ────────────────────────
 function startGrading(cardId) {
-  selectedCardToGrade = CARD_DB.find(c => c.id === cardId);
+  selectedCardToGrade = getGradingVaultCards().find(c => String(c.id) === String(cardId));
   if(!selectedCardToGrade) return;
 
   if (window.unwrapWallet < GRADING_COST) {
@@ -181,10 +207,29 @@ function showResult(card) {
   card.grade = finalScore;
   card.gradeData = { cent: sCent, surf: sSurf, edge: sEdge, corn: sCorn, tag: gradeTag, cert: certId };
 
+  // SALVATAGGIO PERSISTENTE IN TUTTI GLI ARCHIVI
   try {
     const graded = JSON.parse(localStorage.getItem('unwrap_graded') || '{}');
     graded[card.id] = { grade: finalScore, ...card.gradeData };
     localStorage.setItem('unwrap_graded', JSON.stringify(graded));
+
+    // Aggiorna anche unwrap_pulled_cards se è una carta sbustata
+    const pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
+    const pIdx = pulled.findIndex(c => String(c.id) === String(card.id));
+    if (pIdx !== -1) {
+      pulled[pIdx].grade = finalScore;
+      pulled[pIdx].gradeData = card.gradeData;
+      localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
+    }
+
+    // Aggiorna anche unwrap_my_listings se è in vendita
+    const listings = JSON.parse(localStorage.getItem('unwrap_my_listings') || '[]');
+    const lIdx = listings.findIndex(c => String(c.id) === String(card.id));
+    if (lIdx !== -1) {
+      listings[lIdx].grade = finalScore;
+      listings[lIdx].gradeData = card.gradeData;
+      localStorage.setItem('unwrap_my_listings', JSON.stringify(listings));
+    }
   } catch(e) {}
 
   const qrSvg = `<svg viewBox="0 0 21 21" width="50" height="50" style="background:white;border-radius:2px;padding:2px"><rect fill="#000" x="0" y="0" width="7" height="7"/><rect fill="#fff" x="1" y="1" width="5" height="5"/><rect fill="#000" x="2" y="2" width="3" height="3"/><rect fill="#000" x="14" y="0" width="7" height="7"/><rect fill="#fff" x="15" y="1" width="5" height="5"/><rect fill="#000" x="16" y="2" width="3" height="3"/><rect fill="#000" x="0" y="14" width="7" height="7"/><rect fill="#fff" x="1" y="15" width="5" height="5"/><rect fill="#000" x="2" y="16" width="3" height="3"/><rect fill="#000" x="8" y="2" width="1" height="1"/><rect fill="#000" x="10" y="0" width="1" height="3"/><rect fill="#000" x="8" y="6" width="5" height="1"/><rect fill="#000" x="8" y="8" width="1" height="5"/><rect fill="#000" x="10" y="8" width="3" height="1"/><rect fill="#000" x="12" y="10" width="1" height="3"/><rect fill="#000" x="14" y="8" width="1" height="3"/><rect fill="#000" x="16" y="9" width="3" height="1"/><rect fill="#000" x="8" y="14" width="1" height="3"/><rect fill="#000" x="10" y="14" width="3" height="1"/><rect fill="#000" x="14" y="14" width="3" height="3"/><rect fill="#000" x="18" y="14" width="1" height="3"/><rect fill="#000" x="14" y="18" width="1" height="1"/><rect fill="#000" x="18" y="18" width="3" height="3"/></svg>`;
@@ -229,10 +274,15 @@ function showResult(card) {
         </div>
       </div>
     </div>
+    
+    <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" style="padding:12px 24px;font-size:1rem" onclick="window.location.href='vault.html'">🏛️ Torna al Vault (Vedi Carta Gradata)</button>
+      <button class="btn btn-outline" style="padding:12px 24px;font-size:1rem" onclick="resetGrading()">🤖 Grada un'altra carta</button>
+    </div>
   `;
 
   resultDiv.style.display = 'block';
-  showNotif('🏆 Grading Completato!', `${card.name} ha ottenuto un ${finalScore} (${gradeTag}).`, 'success');
+  showNotif('🏆 Grading Completato!', `${card.name} ha ottenuto un ${finalScore} (${gradeTag}). Il tuo Vault è stato aggiornato!`, 'success');
 }
 
 function resetGrading() {
@@ -246,4 +296,12 @@ function resetGrading() {
 
 window.addEventListener('DOMContentLoaded', () => {
   if(typeof updateWalletUI === 'function') updateWalletUI();
+  const urlParams = new URLSearchParams(window.location.search);
+  const cardId = urlParams.get('cardId');
+  if (cardId) {
+    selectService('ai');
+    setTimeout(() => {
+      startGrading(cardId);
+    }, 200);
+  }
 });
