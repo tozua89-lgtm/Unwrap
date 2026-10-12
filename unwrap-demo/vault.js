@@ -1,4 +1,4 @@
-﻿/* =============================================
+/* =============================================
    UNWRAP - Vault JS v10 (Clean Rewrite)
    ============================================= */
 
@@ -64,16 +64,37 @@ function setVaultTab(tab) {
 var activeFilter = 'all';
 
 function getVaultCards() {
-  var base = CARD_DB.filter(function(c) { return c.owner === 'me'; });
+  var base = CARD_DB.filter(function(c) { return c.owner === 'me'; }).map(function(c) {
+    return Object.assign({}, c);
+  });
+
   try {
     var pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
-    // merge without duplicates
     pulled.forEach(function(p) {
-      if (!base.find(function(b) { return String(b.id) === String(p.id); })) {
-        base.unshift(p);
+      var existIdx = base.findIndex(function(b) { return String(b.id) === String(p.id); });
+      if (existIdx === -1) {
+        base.unshift(Object.assign({}, p));
+      } else {
+        base[existIdx] = Object.assign({}, base[existIdx], p);
       }
     });
   } catch(e) {}
+
+  try {
+    var listings = JSON.parse(localStorage.getItem('unwrap_my_listings') || '[]');
+    base.forEach(function(card) {
+      var match = listings.find(function(l) { return String(l.id) === String(card.id); });
+      if (match) {
+        card.isListed = true;
+        card.listingType = match.listingType || 'sale';
+        if (match.price) card.price = match.price;
+        if (match.seeking) card.seeking = match.seeking;
+      } else {
+        card.isListed = false;
+      }
+    });
+  } catch(e) {}
+
   return base;
 }
 
@@ -82,24 +103,36 @@ function renderCards(cards) {
   if (!grid) return;
 
   if (!cards || cards.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">Nessuna carta trovata</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">Nessuna carta trovata in questa sezione</div>';
     return;
   }
 
   grid.innerHTML = cards.map(function(card) {
-    var listedBadge = card.isListed
-      ? '<div style="position:absolute;top:4px;left:4px;background:var(--green);color:#000;font-size:0.55rem;font-weight:800;padding:2px 6px;border-radius:4px">IN VENDITA</div>'
-      : '';
+    var isMkt = !!card.isListed;
+    var statusBadge = '';
+    if (isMkt) {
+      var typeText = card.listingType === 'trade' ? '🔄 IN SCAMBIO' : (card.listingType === 'mixed' ? '🤝 SCAMBIO+CASH' : '🛒 IN VENDITA');
+      statusBadge = '<div style="position:absolute;top:6px;left:6px;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:0.58rem;font-weight:800;padding:3px 7px;border-radius:4px;box-shadow:0 2px 8px rgba(124,58,237,0.5);letter-spacing:0.04em;z-index:2">' + typeText + '</div>';
+    } else {
+      statusBadge = '<div style="position:absolute;top:6px;left:6px;background:rgba(15,23,42,0.85);color:#94a3b8;font-size:0.55rem;font-weight:700;padding:2px 6px;border-radius:4px;border:1px solid rgba(255,255,255,0.15);letter-spacing:0.04em;z-index:2">🔒 PRIVATO</div>';
+    }
+
     var img = card.img
       ? '<img src="' + card.img + '" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display=\'none\'">'
       : '<span style="font-size:3rem">' + (card.emoji || '🃏') + '</span>';
 
-    return '<div class="card-item" onclick="openCardDetail(\'' + card.id + '\')">'
+    var cardBorder = isMkt ? 'border:1.5px solid var(--accent);box-shadow:0 0 15px rgba(124,58,237,0.25);' : '';
+
+    var actionBtn = isMkt
+      ? '<button class="btn btn-outline" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px;border-color:rgba(239,68,68,0.5);color:#ef4444" onclick="event.stopPropagation();delistCard(\'' + card.id + '\')">🚫 Ritira dal Market</button>'
+      : '<button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.72rem;padding:7px 8px" onclick="event.stopPropagation();openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>';
+
+    return '<div class="card-item" style="' + cardBorder + '" onclick="openCardDetail(\'' + card.id + '\')">'
       + '  <div class="card-item-img" style="background:' + (card.bg || card.color || '#1a1a2e') + ';position:relative">'
       + '    ' + img
       + '    <div class="card-item-rarity rarity-' + card.rarity + '">' + card.rarity.toUpperCase() + '</div>'
       + (card.proof ? '<div class="proof-badge">🎥 PROOF</div>' : '')
-      + listedBadge
+      + statusBadge
       + '  </div>'
       + '  <div class="card-item-info">'
       + '    <div class="card-item-name">' + card.name + '</div>'
@@ -109,9 +142,7 @@ function renderCards(cards) {
       + (card.grade ? '<div class="card-item-grade">💎 ' + card.grade + '</div>' : '')
       + '    </div>'
       + '    <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap">'
-      + '      <button class="btn btn-primary" style="flex:1;justify-content:center;font-size:0.7rem;padding:6px 8px" onclick="event.stopPropagation();openSellCardModal(\'' + card.id + '\')">'
-      + (card.isListed ? '🚫 Ritira' : '🏷️ Vendi / Scambia')
-      + '      </button>'
+      + actionBtn
       + '    </div>'
       + '  </div>'
       + '</div>';
@@ -122,13 +153,26 @@ function renderCards(cards) {
 
 function filterCards() {
   var q = (document.getElementById('searchInput') && document.getElementById('searchInput').value || '').toLowerCase();
-  var cards = getVaultCards();
-  var filtered = cards.filter(function(c) {
-    var matchQ = !q || c.name.toLowerCase().includes(q) || (c.set || '').toLowerCase().includes(q) || (c.rarity || '').toLowerCase().includes(q);
-    return matchQ;
+  var allCards = getVaultCards();
+
+  var privateCount = allCards.filter(function(c) { return !c.isListed; }).length;
+  var marketCount  = allCards.filter(function(c) { return c.isListed; }).length;
+  var elAll  = document.getElementById('count-all');
+  var elPriv = document.getElementById('count-private');
+  var elMkt  = document.getElementById('count-market');
+  if (elAll)  elAll.textContent  = allCards.length;
+  if (elPriv) elPriv.textContent = privateCount;
+  if (elMkt)  elMkt.textContent  = marketCount;
+
+  var filtered = allCards.filter(function(c) {
+    return !q || c.name.toLowerCase().includes(q) || (c.set || '').toLowerCase().includes(q) || (c.rarity || '').toLowerCase().includes(q);
   });
-  if (activeFilter === 'rare')   filtered = filtered.filter(function(c) { return c.rarity === 'rare' || c.rarity === 'ultra' || c.rarity === 'secret'; });
-  if (activeFilter === 'graded') filtered = filtered.filter(function(c) { return c.grade; });
+
+  if (activeFilter === 'rare')    filtered = filtered.filter(function(c) { return c.rarity === 'rare' || c.rarity === 'ultra' || c.rarity === 'secret'; });
+  if (activeFilter === 'graded')  filtered = filtered.filter(function(c) { return c.grade; });
+  if (activeFilter === 'private') filtered = filtered.filter(function(c) { return !c.isListed; });
+  if (activeFilter === 'market')  filtered = filtered.filter(function(c) { return c.isListed; });
+
   renderCards(filtered);
 }
 
@@ -155,22 +199,38 @@ function openCardDetail(id) {
       ? '<img src="' + card.img + '" style="height:100%;object-fit:contain" onerror="this.style.display=\'none\'">'
       : '<span style="font-size:5rem">' + (card.emoji || '🃏') + '</span>';
 
+    var isMkt = !!card.isListed;
+    var statusText = isMkt
+      ? '<span style="color:var(--accent-light);font-weight:700">🛒 Sul Marketplace (' + (card.listingType === 'trade' ? 'Solo Scambio' : card.listingType === 'mixed' ? 'Scambio + Cash' : 'In Vendita a €' + card.price) + ')</span>'
+      : '<span style="color:var(--text-muted);font-weight:700">🔒 Vault Privato (Personale, non in commercio)</span>';
+
+    var primaryMarketBtn = isMkt
+      ? '<button class="btn btn-outline" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem;border-color:rgba(239,68,68,0.6);color:#ef4444" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');delistCard(\'' + card.id + '\')">🚫 Ritira dal Market</button>'
+      : '<button class="btn btn-primary" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>';
+
+    var cashVal = ((card.price || 0) * 0.85).toFixed(2);
+
     modalBody.innerHTML = ''
       + '<div style="background:' + (card.bg || card.color || '#1a1a2e') + ';border-radius:var(--radius);height:200px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;overflow:hidden;padding:8px">'
       + imgHTML
       + '</div>'
-      + '<div style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.5rem">'
+      + '<div style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.2rem">'
+      + '<div class="vs-row"><span>Stato</span>' + statusText + '</div>'
       + '<div class="vs-row"><span>Set</span><span>' + (card.set || '-') + '</span></div>'
       + '<div class="vs-row"><span>Rarit&agrave;</span><span class="card-item-rarity rarity-' + card.rarity + '">' + card.rarity.toUpperCase() + '</span></div>'
       + '<div class="vs-row"><span>Proof of Pull</span><span style="color:var(--accent-light)">🎥 4K Registrata</span></div>'
       + '<div class="vs-row"><span>Valore Stimato</span><span style="color:var(--green);font-weight:700">&euro;' + (card.price || 0) + '</span></div>'
       + (card.grade ? '<div class="vs-row"><span>Grading AI</span><span style="color:var(--gold);font-weight:800">💎 ' + card.grade + '</span></div>' : '')
       + '</div>'
-      + '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">'
-      + '<button class="btn btn-primary" style="flex:1;min-width:45%;justify-content:center" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
-      + '<button class="btn btn-outline" style="flex:1;min-width:45%;justify-content:center" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openSellCardModal(\'' + card.id + '\')">🏷️ Vendi / Scambia</button>'
-      + '<button class="btn btn-outline" style="flex:1;min-width:45%;justify-content:center;color:var(--gold);border-color:var(--gold)" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openCashOfferModal(\'' + card.id + '\')">💸 Vendi a Unwrap (Cash ' + ((card.price||0)*0.85).toFixed(2) + '€)</button>'
-      + (!card.grade ? '<button class="btn btn-gold" style="flex:1;min-width:45%;justify-content:center" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Grading</button>' : '')
+      + '<div style="display:flex;flex-direction:column;gap:0.6rem">'
+      + '  <div style="display:flex;gap:0.5rem">'
+      + '    <button class="btn btn-outline" style="flex:1;justify-content:center;padding:10px;font-size:0.85rem" onclick="showNotif(\'Proof of Pull\',\'Apertura video 4K in corso...\',\'\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">🎥 Guarda Proof</button>'
+      +      primaryMarketBtn
+      + '  </div>'
+      + '  <button class="btn btn-gold" style="width:100%;justify-content:center;padding:12px;font-size:0.92rem;font-weight:800;display:flex;align-items:center;gap:6px;box-shadow:0 4px 15px rgba(245,158,11,0.25)" onclick="document.getElementById(\'cardDetailModal\').classList.remove(\'open\');openCashOfferModal(\'' + card.id + '\')">'
+      + '    ⚡ Vendi Subito a Unwrap: &euro;' + cashVal + ' (Cash 85%)'
+      + '  </button>'
+      +    (!card.grade ? '<button class="btn btn-outline" style="width:100%;justify-content:center;font-size:0.8rem;padding:8px;border-color:rgba(255,255,255,0.2);color:var(--text-secondary)" onclick="showNotif(\'Grading richiesto!\',\'Analisi AI avviata\',\'success\');document.getElementById(\'cardDetailModal\').classList.remove(\'open\')">💎 Richiedi Grading AI</button>' : '')
       + '</div>';
   }
 
@@ -305,7 +365,10 @@ function delistCard(id) {
     } catch(e2) {}
   } catch(e) {}
 
-  showNotif('Rimosso dal Marketplace', 'La carta non è più in vendita.', 'success');
+  var detailModal = document.getElementById('cardDetailModal');
+  if (detailModal) detailModal.classList.remove('open');
+
+  showNotif('Rimosso dal Marketplace', 'La carta è tornata nel tuo Vault Privato (non più visibile agli altri utenti).', 'success');
   filterCards();
 }
 
@@ -495,6 +558,7 @@ window.addEventListener('DOMContentLoaded', function() {
   filterCards();
   document.getElementById('statCards').textContent = getVaultCards().length;
 });
+
 
 
 

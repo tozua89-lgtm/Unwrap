@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
@@ -65,7 +65,9 @@
         <div class="vault-toolbar">
           <input type="text" class="search-input" placeholder="🔍 Cerca carta..." id="searchInput" oninput="filterCards()" />
           <div class="filter-tabs" id="filterTabs">
-            <button class="filter-tab active" onclick="setFilter('all',this)">Tutte</button>
+            <button class="filter-tab active" onclick="setFilter('all',this)">Tutte (<span id="count-all">0</span>)</button>
+            <button class="filter-tab" onclick="setFilter('private',this)">🔒 Vault Privato (<span id="count-private">0</span>)</button>
+            <button class="filter-tab" onclick="setFilter('market',this)">🛒 Sul Marketplace (<span id="count-market">0</span>)</button>
             <button class="filter-tab" onclick="setFilter('rare',this)">Rare/Secret</button>
             <button class="filter-tab" onclick="setFilter('graded',this)">💎 Già Gradate</button>
           </div>

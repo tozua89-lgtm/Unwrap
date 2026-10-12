@@ -1,4 +1,4 @@
-﻿/* =============================================
+/* =============================================
    UNWRAP — Live Opening JS v6 (Clean Rewrite)
    ============================================= */
 
@@ -144,7 +144,7 @@ async function openPack() {
   var highlightJson = JSON.stringify(highlight).replace(/"/g, '&quot;');
 
   resultCard.innerHTML =
-    '<button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.4rem;cursor:pointer;z-index:20;display:flex;align-items:center;justify-content:center;line-height:1" onclick="closeOpenResult()">×</button>' +
+    '<button type="button" aria-label="Chiudi" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);border:1.5px solid rgba(255,255,255,0.4);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.6rem;cursor:pointer;z-index:9999;display:flex;align-items:center;justify-content:center;line-height:1;touch-action:manipulation;-webkit-tap-highlight-color:transparent" onclick="closeOpenResult(event)" ontouchend="closeOpenResult(event)">×</button>' +
     '<div class="card-img-container" style="background:' + highlight.bg + '">' +
       '<img src="' + highlight.img + '" onerror="this.style.display=\'none\'" />' +
       '<div style="position:absolute;bottom:8px;right:8px;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,0.85);border:1px solid ' + col + ';color:' + col + ';font-size:0.65rem;font-weight:800">' + rarityLabels[highlight.rarity] + '</div>' +
@@ -156,11 +156,12 @@ async function openPack() {
     '<div style="display:flex;gap:0.5rem;flex-wrap:wrap">' +
       '<button class="btn btn-primary" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px" onclick="openProofVideo(' + highlightJson + ')">▶ Proof Video</button>' +
       '<button class="btn btn-outline" style="flex:1;min-width:130px;justify-content:center;font-size:0.78rem;padding:8px;border-color:var(--gold);color:var(--gold)" onclick="instantSellLive(' + highlightJson + ')">⚡ Vendi (€' + (highlight.price * 0.85).toFixed(2) + ')</button>' +
-    '</div>';
+    '</div>' +
+    '<button class="btn btn-outline" style="width:100%;justify-content:center;font-size:0.82rem;padding:9px;margin-top:8px;background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.25);color:#fff" onclick="closeOpenResult(event)">✓ Salva nel Vault e Chiudi</button>';
 
   openResult.style.display = 'block';
   document.querySelector('.live-stream').classList.add('has-result');
-  setTimeout(function() { openResult.classList.add('visible'); }, 50);
+  setTimeout(function() { openResult.style.display = ''; openResult.classList.add('visible'); }, 50);
 
   currentPulls = [highlight].concat(currentPulls);
   renderPullLog(currentPulls.slice(0, 14));
@@ -191,22 +192,48 @@ function instantSellLive(cardObj) {
 }
 
 // ─── CLOSE RESULT ──────────────────────────────────
-function closeOpenResult() {
-  document.getElementById('openResult').style.display = 'none';
-  document.querySelector('.live-stream').classList.remove('has-result');
+function closeOpenResult(e) {
+  if (e) {
+    if (e.preventDefault) e.preventDefault();
+    if (e.stopPropagation) e.stopPropagation();
+  }
+  if (cashOfferTimer) clearInterval(cashOfferTimer);
+
+  var openResult = document.getElementById('openResult');
+  if (openResult) {
+    openResult.classList.remove('visible');
+    openResult.style.setProperty('display', 'none', 'important');
+  }
+
+  var resultCard = document.getElementById('resultCard');
+  if (resultCard) {
+    resultCard.innerHTML = '';
+  }
+
+  var liveStream = document.querySelector('.live-stream');
+  if (liveStream) {
+    liveStream.classList.remove('has-result');
+  }
+
   var cashWidget = document.getElementById('cashOfferWidget');
-  if (cashWidget) cashWidget.style.display = 'none';
+  if (cashWidget) {
+    cashWidget.style.setProperty('display', 'none', 'important');
+  }
 
   var packVisual = document.getElementById('packVisual');
-  packVisual.innerHTML = '📦';
-  packVisual.style.fontSize = '2rem';
-  packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
-  packVisual.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
-  packVisual.style.pointerEvents = 'auto';
+  if (packVisual) {
+    packVisual.innerHTML = '📦';
+    packVisual.style.fontSize = '2rem';
+    packVisual.style.background = 'linear-gradient(135deg, #1e3a5f, #7c3aed)';
+    packVisual.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)';
+    packVisual.style.pointerEvents = 'auto';
+  }
 
   var openBtn = document.getElementById('openBtn');
-  openBtn.disabled = false;
-  openBtn.textContent = '▶ Apri Prossimo Pack';
+  if (openBtn) {
+    openBtn.disabled = false;
+    openBtn.textContent = '▶ Apri Prossimo Pack';
+  }
   isOpening = false;
 }
 
@@ -238,26 +265,27 @@ function triggerCashOffer(card) {
 
 function acceptCashOffer() {
   if (cashOfferTimer) clearInterval(cashOfferTimer);
-  document.getElementById('cashOfferWidget').style.display = 'none';
-  var amountStr = document.getElementById('cashOfferAmount').textContent.replace('€','');
-  window.unwrapWallet = (window.unwrapWallet || 0) + parseInt(amountStr);
+  var amountStr = document.getElementById('cashOfferAmount').textContent.replace('€','').trim();
+  var amount = parseFloat(amountStr) || 0;
+  window.unwrapWallet = (window.unwrapWallet || 0) + amount;
   if (typeof updateWalletUI === 'function') updateWalletUI();
 
   if (currentCashOfferCardId) {
     try {
       var pulled = JSON.parse(localStorage.getItem('unwrap_pulled_cards') || '[]');
-      var idx = pulled.findIndex(function(c) { return c.id === currentCashOfferCardId; });
-      if (idx !== -1) pulled.splice(idx, 1);
+      pulled = pulled.filter(function(c) { return String(c.id) !== String(currentCashOfferCardId); });
       localStorage.setItem('unwrap_pulled_cards', JSON.stringify(pulled));
     } catch(e) {}
   }
-  showNotif('Cash Offer Accettata!', 'Il credito è stato aggiunto al tuo Wallet istantaneamente.', 'success');
+
+  closeOpenResult();
+  showNotif('Cash Offer Accettata!', 'Accreditati €' + amount.toFixed(2) + ' nel tuo Wallet istantaneamente.', 'success');
 }
 
 function declineCashOffer() {
   if (cashOfferTimer) clearInterval(cashOfferTimer);
-  document.getElementById('cashOfferWidget').style.display = 'none';
-  showNotif('Offerta Declinata', 'La carta è al sicuro nel tuo Vault assieme al bulk.', '');
+  closeOpenResult();
+  showNotif('Salvata nel Vault!', 'La carta è al sicuro nel tuo Vault assieme al bulk.', 'success');
 }
 
 // ─── INIT ──────────────────────────────────────────
@@ -267,6 +295,7 @@ window.addEventListener('DOMContentLoaded', function() {
   if (urlParams.get('game')) currentGame = urlParams.get('game');
   if (urlParams.get('packReady') === 'true') startLiveSession();
 });
+
 
 
 

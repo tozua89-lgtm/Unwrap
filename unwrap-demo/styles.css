@@ -3268,7 +3268,6 @@ img { max-width: 100%; }
 
   /* Result card: max-height limitato per non sforare */
   .open-result {
-    display: block !important;
     width: 100% !important;
     overflow: visible !important;
     margin-top: 0 !important;
@@ -3469,3 +3468,4 @@ img { max-width: 100%; }
   font-weight: 700;
   line-height: 1.2;
 }
+
